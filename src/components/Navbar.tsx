@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useCart } from "../context/CartContext"; // ✅ NEW: Import the useCart hook
+import { useCart } from "../context/CartContext";
 import Login from "./Login";
 import RebuZZar from "../assets/RebuZZar.png";
 
 const Navbar = ({ setSearch, setMenu }: { setSearch: (value: string) => void; setMenu: (value: string) => void; }) => {
   const [loginPop, setLoginPop] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setProfileMenuOpen] = useState(false);
+
   const [activeCategory, setActiveCategory] = useState("All");
   const { user, logout } = useAuth();
-  const { itemCount } = useCart(); // ✅ NEW: Get the item count from the context
+  const { itemCount } = useCart();
 
   const categories = ["All", "Books", "Electronics", "Lab Equipment", "Stationery", "Furniture", "Cycle", "Accessories"];
 
@@ -57,10 +59,50 @@ const Navbar = ({ setSearch, setMenu }: { setSearch: (value: string) => void; se
               {/* End of New Cart Icon */}
               
               {user ? (
-                <>
-                  <Link to="/profile" className="p-2 rounded-full hover:bg-neutral-200" title="Profile"><UserIcon /></Link>
-                  <button onClick={logout} className="p-2 rounded-full hover:bg-neutral-200" title="Logout"><LogoutIcon /></button>
-                </>
+                <div className="relative group">
+                  {/* Avatar Button */}
+                  <button className="flex items-center gap-2 p-1 rounded-full hover:bg-neutral-200 transition-all">
+                    <img
+                      src={user.avatar || "https://via.placeholder.com/80x80?text=👤"}
+                      alt="User Avatar"
+                      className="w-10 h-10 rounded-full object-cover object-center border border-neutral-300 bg-neutral-200"
+                      onError={(e) =>
+                        ((e.target as HTMLImageElement).src = "https://via.placeholder.com/80x80?text=👤")
+                      }
+                    />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-4 h-4 text-neutral-600 mt-0.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-neutral-200 rounded-lg shadow-lg opacity-0 invisible group-hover:visible group-hover:opacity-100 group-hover:translate-y-1 transform transition-all duration-200 z-50">
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 transition"
+                    >
+                      Profile
+                    </Link>
+                    <Link
+                      to="/my-bookings"
+                      className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 transition"
+                    >
+                      My Bookings
+                    </Link>
+                    <button
+                      onClick={logout}
+                      className="w-full text-left px-4 py-2 text-red-500 hover:bg-neutral-100 transition"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </div>
               ) : (
                 <button onClick={() => setLoginPop(!loginPop)} className="flex items-center gap-x-2 font-semibold text-neutral-700 hover:text-neutral-900 transition-colors">
                   Login
@@ -93,9 +135,59 @@ const Navbar = ({ setSearch, setMenu }: { setSearch: (value: string) => void; se
               {/* End of New Cart Icon */}
               
               {user ? (
-                <Link to="/profile" className="p-2 text-neutral-700"><UserIcon /></Link>
+                <div className="relative">
+                  {/* Avatar Button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation(); // prevent hamburger click
+                      setProfileMenuOpen((prev) => !prev);
+                    }}
+                    className="p-1 rounded-full hover:bg-neutral-200 transition-all"
+                  >
+                    <img
+                      src={user.avatar || "https://via.placeholder.com/80x80?text=👤"}
+                      alt="User Avatar"
+                      className="w-9 h-9 rounded-full object-cover object-center border border-neutral-300 bg-neutral-200"
+                      onError={(e) =>
+                        ((e.target as HTMLImageElement).src = "https://via.placeholder.com/80x80?text=👤")
+                      }
+                    />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {isProfileMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white border border-neutral-200 rounded-lg shadow-lg z-50">
+                      <Link
+                        to="/profile"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 transition"
+                      >
+                        Profile
+                      </Link>
+                      <Link
+                        to="/my-bookings"
+                        onClick={() => setProfileMenuOpen(false)}
+                        className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100 transition"
+                      >
+                        My Bookings
+                      </Link>
+                      <button
+                        onClick={() => {
+                          logout();
+                          setProfileMenuOpen(false);
+                        }}
+                        className="w-full text-left px-4 py-2 text-red-500 hover:bg-neutral-100 transition"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
               ) : (
-                <button onClick={() => setLoginPop(!loginPop)} className="flex items-center gap-x-2 font-semibold text-neutral-700 hover:text-neutral-900 transition-colors">
+                <button
+                  onClick={() => setLoginPop(!loginPop)}
+                  className="flex items-center gap-x-2 font-semibold text-neutral-700 hover:text-neutral-900 transition-colors"
+                >
                   Login
                   <UserIcon />
                 </button>
@@ -170,11 +262,11 @@ const UserIcon = () => (
     </svg>
   </div>
 );
-const LogoutIcon = () => (
-  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-  </svg>
-);
+// const LogoutIcon = () => (
+//   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+//   </svg>
+// );
 
 // ✅ NEW: Cart Icon SVG
 const CartIcon = () => (

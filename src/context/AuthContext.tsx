@@ -33,7 +33,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // On initial load, check local storage for existing session
 useEffect(() => {
   try {
     const storedToken = localStorage.getItem('authToken');

@@ -5,7 +5,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { debug } from "./utils/debug";
 import { useAuth } from "./context/AuthContext";
-import AdminRoute from "./components/AdminRoute"; // Eager-load the guard
+import AdminRoute from "./components/AdminRoute"; 
 import Navbar from "./components/Navbar";
 import Main from "./components/Main";
 import Menubar from "./components/Menubar";
@@ -20,10 +20,10 @@ import BookingSuccess from './components/BookingSuccess';
 import MyBookings from './components/MyBookings';
 import ResetPassword from "./components/ResetPassword";
 import Footer from "./components/Footer";
-import TermsAndConditions from "./legal/TermsAndConditions";
-import PrivacyPolicy from "./legal/PrivacyPolicy";
-import ReturnRefundPolicy from "./legal/ReturnRefundPolicy";
-import FAQ from "./legal/FAQ";
+import TermsAndConditions from "./components/TermsAndConditions";
+import PrivacyPolicy from "./components/PrivacyPolicy";
+import ReturnRefundPolicy from "./components/ReturnRefundPolicy";
+import FAQ from "./components/FAQ";
 
 // --- Lazy-loaded Admin components ---
 const AdminPendingProducts = lazy(() => import("./components/AdminPendingProducts"));

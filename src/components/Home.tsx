@@ -170,13 +170,24 @@ const Home = ({ products, loading, error }: HomeProps) => {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {products.map((data) => (
-                <Link to={`/product/${data._id}`} key={data._id} className="group">
-                  <div className="h-full flex flex-col border border-neutral-200 rounded-lg shadow-sm hover:shadow-2xl transition-shadow duration-300 bg-neutral-100 overflow-hidden">
+                <Link to={`/product/${data._id}`} key={data._id} className="group relative">
+                  <div className="h-full flex flex-col border border-neutral-200 rounded-lg shadow-sm hover:shadow-2xl transition-shadow duration-300 bg-white overflow-hidden relative">
+                    
                     {/* Image Slider */}
-                    <ProductImagesSlider
-                      images={Array.isArray(data.imageUrl) ? data.imageUrl : [data.imageUrl]}
-                      title={data.title}
-                    />
+                    <div className="relative">
+                      <ProductImagesSlider
+                        images={Array.isArray(data.imageUrl) ? data.imageUrl : [data.imageUrl]}
+                        title={data.title}
+                      />
+
+                      {/* Sold Out Badge */}
+                      {data.isBooked && (
+                        <span className="absolute top-3 right-3 bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md">
+                          Sold Out
+                        </span>
+                      )}
+                    </div>
+
                     {/* Product Info */}
                     <div className="p-4 flex flex-col flex-grow">
                       <h2 className="font-bold text-lg truncate mb-1 text-neutral-700 group-hover:text-neutral-900 transition-colors">
@@ -187,8 +198,17 @@ const Home = ({ products, loading, error }: HomeProps) => {
                         ₹{data.price.toLocaleString("en-IN")}
                       </p>
                       <div className="flex-grow"></div>
-                      <button className="w-full mt-2 bg-neutral-600 text-white py-2 rounded-md font-semibold hover:bg-neutral-900 transition-colors">
-                        View Details
+
+                      {/* View Details / Sold Out Button */}
+                      <button
+                        disabled={data.isBooked}
+                        className={`w-full mt-2 py-2 rounded-md font-semibold transition-colors ${
+                          data.isBooked
+                            ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                            : "bg-neutral-600 text-white hover:bg-neutral-900"
+                        }`}
+                      >
+                        {data.isBooked ? "Sold Out" : "View Details"}
                       </button>
                     </div>
                   </div>
