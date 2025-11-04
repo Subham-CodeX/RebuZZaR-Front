@@ -50,6 +50,10 @@ const Login = (props: PopupProp) => {
     }
   };
 
+  const [showOTP, setShowOTP] = useState(false);
+  const [userId, setUserId] = useState('');
+  const [otp, setOtp] = useState('');
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -65,12 +69,36 @@ const Login = (props: PopupProp) => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Sign-up failed.');
 
-      toast.success('Sign-up successful! You can now log in.');
-      setFormMode('login');
+  // ✅ Instead of direct login, show OTP verification section
+    toast.success('OTP sent to your email! Please verify your account.');
+    setUserId(data.userId);   // store userId from backend response
+    setShowOTP(true);         // show OTP input
+  } catch (err: any) {
+    toast.error(err.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+  const handleVerifyOTP = async () => {
+    if (!otp) return toast.error('Please enter OTP.');
+    
+    try {
+      const res = await fetch(`${apiUrl}/api/auth/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, otp }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'OTP verification failed.');
+
+      toast.success('Email verified successfully!');
+      localStorage.setItem('authToken', data.token);
+      setShowOTP(false);
+      setFormMode('login'); // or navigate('/')
     } catch (err: any) {
       toast.error(err.message);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -366,6 +394,28 @@ const Login = (props: PopupProp) => {
                 </h3>
               </div>
               <div className="mt-6 space-y-4">{renderForm()}</div>
+              {/* ✅ OTP Verification Section */}
+                {showOTP && (
+                  <div className="mt-6 border-t pt-4">
+                    <h3 className="text-lg font-semibold mb-3 text-center">Verify Your Email</h3>
+                    <p className="text-sm text-neutral-600 text-center mb-3">
+                      We’ve sent a 6-digit OTP to your registered email.
+                    </p>
+                    <input
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      placeholder="Enter 6-digit OTP"
+                      className="border px-4 py-2 rounded-md w-full mb-3 text-center"
+                    />
+                    <button
+                      onClick={handleVerifyOTP}
+                      className="w-full py-2 px-4 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+                    >
+                      Verify Email
+                    </button>
+                  </div>
+                )}
               <p className="mt-6 text-xs text-center text-neutral-500">
                 By continuing, you agree to RebuZZar's{' '}
                 <a href="#" className="font-medium text-neutral-700 hover:underline">
