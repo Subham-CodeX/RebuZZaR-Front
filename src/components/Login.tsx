@@ -25,7 +25,7 @@ const Login = (props: PopupProp) => {
   const { login } = useAuth();
 
   const handleGoogleSignin = () => {
-    toast.error("Google Sign-in is not yet implemented.");
+    window.location.href = `${apiUrl}/api/auth/google`;
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -156,6 +156,46 @@ const Login = (props: PopupProp) => {
     "w-full px-4 py-2 border border-neutral-400 rounded-md bg-neutral-100 text-neutral-700 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500";
 
   const renderForm = () => {
+
+    if (showOTP) {
+      return (
+        <div className="flex flex-col items-center justify-center space-y-6">
+          <h2 className="text-xl font-semibold text-neutral-700">Verify Your Email</h2>
+          <p className="text-sm text-neutral-500 text-center max-w-xs">
+            We’ve sent a 6-digit OTP to your university email. Please enter it below to verify your account.
+          </p>
+
+          <input
+            type="text"
+            maxLength={6}
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+            className="w-44 tracking-[6px] text-center text-lg font-semibold px-4 py-2 border border-neutral-400 rounded-lg bg-neutral-100 text-neutral-700 focus:outline-none focus:ring-2 focus:ring-neutral-700 focus:border-neutral-700"
+            placeholder="------"
+          />
+
+          <button
+            onClick={handleVerifyOTP}
+            disabled={isLoading}
+            className="w-44 py-2 rounded-lg bg-neutral-700 text-white font-medium hover:bg-neutral-800 disabled:bg-neutral-400 transition-all duration-200"
+          >
+            {isLoading ? 'Verifying...' : 'Verify OTP'}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setShowOTP(false);
+              setFormMode('signup');
+            }}
+            className="text-sm text-neutral-600 hover:underline"
+          >
+            Go Back
+          </button>
+        </div>
+      );
+    }
+
     if (formMode === 'forgot') {
       return (
         <form onSubmit={handleForgotPassword} className="space-y-4">
@@ -394,28 +434,6 @@ const Login = (props: PopupProp) => {
                 </h3>
               </div>
               <div className="mt-6 space-y-4">{renderForm()}</div>
-              {/* ✅ OTP Verification Section */}
-                {showOTP && (
-                  <div className="mt-6 border-t pt-4">
-                    <h3 className="text-lg font-semibold mb-3 text-center">Verify Your Email</h3>
-                    <p className="text-sm text-neutral-600 text-center mb-3">
-                      We’ve sent a 6-digit OTP to your registered email.
-                    </p>
-                    <input
-                      type="text"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
-                      placeholder="Enter 6-digit OTP"
-                      className="border px-4 py-2 rounded-md w-full mb-3 text-center"
-                    />
-                    <button
-                      onClick={handleVerifyOTP}
-                      className="w-full py-2 px-4 rounded-md bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
-                    >
-                      Verify Email
-                    </button>
-                  </div>
-                )}
               <p className="mt-6 text-xs text-center text-neutral-500">
                 By continuing, you agree to RebuZZar's{' '}
                 <a href="#" className="font-medium text-neutral-700 hover:underline">
