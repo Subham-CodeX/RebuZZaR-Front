@@ -1,4 +1,4 @@
-const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { Product } from '../types';
 import toast from 'react-hot-toast';

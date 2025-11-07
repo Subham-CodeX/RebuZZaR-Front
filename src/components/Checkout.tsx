@@ -1,4 +1,4 @@
-const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 import { useCart } from '../context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';

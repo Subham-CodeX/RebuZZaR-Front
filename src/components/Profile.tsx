@@ -1,4 +1,4 @@
-const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 import { useState, useEffect, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';

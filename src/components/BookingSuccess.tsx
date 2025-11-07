@@ -34,7 +34,7 @@ const BookingSuccess = () => {
       try {
         const token = localStorage.getItem("authToken");
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/bookings/${bookingId}`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/bookings/${bookingId}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

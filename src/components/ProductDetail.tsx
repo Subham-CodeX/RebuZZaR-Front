@@ -5,7 +5,7 @@ import { logError } from '../utils/logError';
 import { useCart } from '../context/CartContext';
 
 // It's good practice to define the API URL at the top level
-const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 const ProductDetail = () => {
     const { productId } = useParams<{ productId: string }>();

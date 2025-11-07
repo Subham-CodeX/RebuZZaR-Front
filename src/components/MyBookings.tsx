@@ -5,7 +5,7 @@
 // Includes order info, product details, and cancel booking functionality.
 // ============================================================================
 
-const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';

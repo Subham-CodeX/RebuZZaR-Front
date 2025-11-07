@@ -1,4 +1,4 @@
-const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
