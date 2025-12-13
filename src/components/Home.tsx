@@ -16,10 +16,10 @@ const ProductImagesSlider = ({ images, title }: { images: string[]; title: strin
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    if (images.length <= 1) return; // no slider needed
+    if (images.length <= 1) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % images.length);
-    }, 3000); // change every 3 seconds
+    }, 3000);
     return () => clearInterval(interval);
   }, [images]);
 
@@ -49,7 +49,9 @@ const ProductImagesSlider = ({ images, title }: { images: string[]; title: strin
         {images.map((_, idx) => (
           <span
             key={idx}
-            className={`h-2 w-2 rounded-full ${idx === currentIndex ? "bg-white" : "bg-gray-400"}`}
+            className={`h-2 w-2 rounded-full ${
+              idx === currentIndex ? "bg-white" : "bg-gray-400"
+            }`}
           />
         ))}
       </div>
@@ -62,6 +64,7 @@ const ProductImagesSlider = ({ images, title }: { images: string[]; title: strin
 // ========================
 const FAQItem = ({ question, answer }: { question: string; answer: string }) => {
   const [open, setOpen] = useState(false);
+
   return (
     <div className="border-b border-neutral-200">
       <button
@@ -69,9 +72,19 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
         className="w-full flex justify-between items-center py-4 text-left text-neutral-800 font-medium hover:text-secondary transition-colors"
       >
         <span>{question}</span>
-        <span className={`transform transition-transform ${open ? "rotate-45" : "rotate-0"} text-2xl`}>+</span>
+        <span
+          className={`transform transition-transform ${
+            open ? "rotate-45" : "rotate-0"
+          } text-2xl`}
+        >
+          +
+        </span>
       </button>
-      <div className={`overflow-hidden transition-max-height duration-500 ease-in-out ${open ? "max-h-96" : "max-h-0"}`}>
+      <div
+        className={`overflow-hidden transition-max-height duration-500 ease-in-out ${
+          open ? "max-h-96" : "max-h-0"
+        }`}
+      >
         <p className="py-2 text-neutral-600">{answer}</p>
       </div>
     </div>
@@ -94,7 +107,6 @@ const Home = ({ products, loading, error }: HomeProps) => {
     );
   }
 
-  // ===== FAQ Data =====
   const faqData = [
     {
       question: "How does RebuZZar work?",
@@ -113,11 +125,13 @@ const Home = ({ products, loading, error }: HomeProps) => {
     },
     {
       question: "How does the approval process work?",
-      answer: "Every product goes through a quality and authenticity review. If the product violates any of our guidelines, it will be rejected or sent back to the seller for correction."
+      answer:
+        "Every product goes through a quality and authenticity review. If the product violates any of our guidelines, it will be rejected or sent back to the seller for correction."
     },
     {
       question: "What types of products are allowed?",
-      answer: "Only original and authorized products that comply with laws and platform policies. Counterfeit or illegal items are strictly prohibited."
+      answer:
+        "Only original and authorized products that comply with laws and platform policies. Counterfeit or illegal items are strictly prohibited."
     },
     {
       question: "What payment methods do you support?",
@@ -131,15 +145,18 @@ const Home = ({ products, loading, error }: HomeProps) => {
     },
     {
       question: "Can I cancel an order after placing it?",
-      answer: "Buyers can cancel their orders any time before payment is made. Once payment has been completed, cancellations, returns, and refunds are not allowed."
+      answer:
+        "Buyers can cancel their orders any time before payment is made. Once payment has been completed, cancellations, returns, and refunds are not allowed."
     },
     {
       question: "Is my personal information safe on RebuZZar?",
-      answer: "Yes. All personal data is processed in accordance with applicable data protection laws and our Privacy Policy."
+      answer:
+        "Yes. All personal data is processed in accordance with applicable data protection laws and our Privacy Policy."
     },
     {
       question: "How do I contact support?",
-      answer: "Reach our support team via the 'Contact Us' page for any queries or issues."
+      answer:
+        "Reach our support team via the 'Contact Us' page for any queries or issues."
     }
   ];
 
@@ -172,7 +189,7 @@ const Home = ({ products, loading, error }: HomeProps) => {
               {products.map((data) => (
                 <Link to={`/product/${data._id}`} key={data._id} className="group relative">
                   <div className="h-full flex flex-col border border-neutral-200 rounded-lg shadow-sm hover:shadow-2xl transition-shadow duration-300 bg-white overflow-hidden relative">
-                    
+
                     {/* Image Slider */}
                     <div className="relative">
                       <ProductImagesSlider
@@ -197,6 +214,7 @@ const Home = ({ products, loading, error }: HomeProps) => {
                       <p className="text-xl font-semibold text-neutral-900 mb-4 group-hover:text-neutral-900 transition-colors">
                         ₹{data.price.toLocaleString("en-IN")}
                       </p>
+
                       <div className="flex-grow"></div>
 
                       {/* View Details / Sold Out Button */}
@@ -227,7 +245,7 @@ const Home = ({ products, loading, error }: HomeProps) => {
         )}
       </div>
 
-      {/* Story & Values Section */}
+      {/* Story Section */}
       <div className="bg-neutral-100 pt-16 pb-20">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h3 className="text-sm font-semibold text-primary-dark uppercase tracking-wider">Our Story</h3>
@@ -253,6 +271,7 @@ const Home = ({ products, loading, error }: HomeProps) => {
             <h3 className="text-sm font-semibold text-primary-dark uppercase tracking-wider">Our Philosophy</h3>
             <h2 className="mt-2 text-3xl font-extrabold text-neutral-900">Our Core Values</h2>
           </div>
+
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-10">
             <ValueCard
               Icon={ShieldIcon}
@@ -273,10 +292,11 @@ const Home = ({ products, loading, error }: HomeProps) => {
         </div>
       </div>
 
-      {/* FAQ Section - Above Footer */}
+      {/* FAQ Section */}
       <div className="bg-neutral-50 py-20 px-4">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-extrabold text-neutral-900 text-center mb-12">Frequently Asked Questions</h2>
+
           <div className="space-y-4">
             {faqData.map((item, idx) => (
               <FAQItem key={idx} question={item.question} answer={item.answer} />
@@ -285,15 +305,16 @@ const Home = ({ products, loading, error }: HomeProps) => {
         </div>
       </div>
 
-      {/* Join Our Movement */}
+      {/* Join Section */}
       <div className="bg-neutral-800">
         <div className="max-w-4xl mx-auto text-center py-16 px-4 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-extrabold text-white">
             <span className="block">Ready to dive in?</span>
             <span className="block text-secondary">Join our campus movement today.</span>
           </h2>
+
           <a
-            href="https://www.instagram.com/_rebuzzar_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+            href="https://www.instagram.com/rebuzzar"
             className="mt-8 w-full inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-full text-white bg-secondary hover:bg-opacity-90 sm:w-auto transition-transform hover:scale-105"
           >
             Follow us on Instagram
@@ -307,7 +328,15 @@ const Home = ({ products, loading, error }: HomeProps) => {
 // ========================
 // Value Card Component
 // ========================
-const ValueCard = ({ Icon, title, description }: { Icon: React.FC; title: string; description: string }) => (
+const ValueCard = ({
+  Icon,
+  title,
+  description,
+}: {
+  Icon: React.FC;
+  title: string;
+  description: string;
+}) => (
   <div className="text-center">
     <div className="flex items-center justify-center h-16 w-16 rounded-full bg-primary text-neutral-700 mx-auto">
       <Icon />
