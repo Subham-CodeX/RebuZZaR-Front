@@ -1,29 +1,15 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
-// Modal Component
-const Modal = ({ open, title, message, onClose }) => {
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="max-w-lg w-full bg-white rounded-lg shadow-lg p-6">
-        <h3 className="text-lg font-bold mb-2">{title}</h3>
-        <p className="mb-6 text-neutral-700">{message}</p>
-        <div className="flex justify-end">
-          <button onClick={onClose} className="px-4 py-2 bg-neutral-800 text-white rounded">Close</button>
-        </div>
-      </div>
-    </div>
-  );
-};
+import PaymentQRModal from "../components/PaymentQRModal";
 
 const Advertise = () => {
-  const { user } = useAuth?.() ?? {};
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const BASE = (import.meta.env.VITE_BACKEND_URL || "").replace(/\/+$/, "");
 
-  // ===== FORM STATE =====
+  // ================= FORM STATE =================
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [businessName, setBusinessName] = useState("");
@@ -33,199 +19,200 @@ const Advertise = () => {
   const [amountPaid, setAmountPaid] = useState("");
   const [requestedDuration, setRequestedDuration] = useState(7);
 
-  const [images, setImages] = useState([]);
-  const [imagePreviews, setImagePreviews] = useState([]);
+  // ================= QR + PAYMENT =================
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [paymentProof, setPaymentProof] = useState<File | null>(null);
+  const paymentRef = useRef<HTMLInputElement | null>(null);
 
-  const [paymentProof, setPaymentProof] = useState(null);
-  const fileImagesRef = useRef(null);
-  const filePaymentRef = useRef(null);
+  // ================= IMAGE STATE =================
+  const [images, setImages] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
 
-  // UI
-  const [uploading, setUploading] = useState(false);
-  const [successModalOpen, setSuccessModalOpen] = useState(false);
-  const [errorModalOpen, setErrorModalOpen] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const BASE = (import.meta.env.VITE_BACKEND_URL || "").replace(/\/+$/, "");
+  // ================= IMAGE HANDLING =================
+  const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
 
-  // ===== IMAGE HANDLERS =====
-  const previewImages = (files) => {
-    if (!files) return;
-    const arr = Array.from(files);
-    setImages(arr);
-    setImagePreviews(arr.map((f) => URL.createObjectURL(f)));
-  };
-
-  const onImagesChange = (e) => previewImages(e.target.files);
-
-  const onPaymentProofChange = (e) => {
-    const f = e.target.files?.[0];
-    if (!f) return setPaymentProof(null);
-
-    if (!["image/jpeg", "image/png"].includes(f.type)) {
-      setErrorMsg("Payment proof must be JPG or PNG only.");
-      setErrorModalOpen(true);
+    if (images.length + files.length > 5) {
+      alert("You can upload maximum 5 images.");
       return;
     }
-    setPaymentProof(f);
+
+    const newPreviews = files.map(file => URL.createObjectURL(file));
+    setImages(prev => [...prev, ...files]);
+    setPreviews(prev => [...prev, ...newPreviews]);
+
+    e.target.value = "";
   };
 
-  // ===== VALIDATION =====
-  const validate = () => {
-    if (!title.trim()) return "Title is required.";
-    if (!businessName.trim()) return "Business name is required.";
-    if (!description.trim()) return "Description is required.";
-    if (!contactPhone.trim()) return "Phone number is required.";
-    if (!contactEmail.trim()) return "Email is required.";
-    if (images.length === 0) return "Please upload at least one ad image.";
-    if (!paymentProof) return "Payment proof is required.";
-
-    return null;
+  const removeImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+    setPreviews(prev => prev.filter((_, i) => i !== index));
   };
 
-  // ===== SUBMIT =====
-  const handleSubmit = async (e) => {
+  // ================= PAYMENT PROOF =================
+  const handlePaymentProof = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      alert("Payment proof must be JPG / PNG / WEBP");
+      return;
+    }
+
+    setPaymentProof(file);
+  };
+
+  // ================= SUBMIT =================
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const error = validate();
-    if (error) {
-      setErrorMsg(error);
-      setErrorModalOpen(true);
-      return;
+    if (!title || !description || !businessName || !contactPhone || !contactEmail) {
+      return alert("Please fill all required fields.");
     }
 
-    setUploading(true);
+    if (images.length === 0) {
+      return alert("Upload at least one advertisement image.");
+    }
 
+    if (!paymentProof) {
+      return alert("Payment proof is required. Please complete payment first.");
+    }
+
+    const token =
+      localStorage.getItem("token") ||
+      localStorage.getItem("authToken") ||
+      user?.token;
+
+    if (!token) return alert("Not logged in.");
+
+    const form = new FormData();
+    form.append("title", title);
+    form.append("description", description);
+    form.append("businessName", businessName);
+    form.append("contactPhone", contactPhone);
+    form.append("contactEmail", contactEmail);
+    form.append("paymentUPI", paymentUPI);
+    form.append("amountPaid", amountPaid);
+    form.append("requestedDuration", String(requestedDuration));
+
+    images.forEach(img => form.append("images", img));
+    form.append("paymentProof", paymentProof);
+
+    setLoading(true);
     try {
-      const form = new FormData();
-      form.append("title", title);
-      form.append("description", description);
-      form.append("businessName", businessName);
-      form.append("contactPhone", contactPhone);
-      form.append("contactEmail", contactEmail);
-      form.append("paymentUPI", paymentUPI);
-      form.append("amountPaid", amountPaid);
-      form.append("requestedDuration", requestedDuration);
-
-      images.forEach((img) => form.append("images", img));
-      if (paymentProof) form.append("paymentProof", paymentProof);
-
-      const token =
-        localStorage.getItem("token") ||
-        localStorage.getItem("authToken") ||
-        user?.token ||
-        user?.accessToken;
-
-      const res = await axios.post(`${BASE}/api/ads/create`, form, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        withCredentials: true,
+      await axios.post(`${BASE}/api/ads/create`, form, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (res.data.success) {
-        setSuccessModalOpen(true);
-
-        setTitle("");
-        setDescription("");
-        setBusinessName("");
-        setContactPhone("");
-        setContactEmail("");
-        setPaymentUPI("");
-        setAmountPaid("");
-        setRequestedDuration(7);
-        setImages([]);
-        setImagePreviews([]);
-        setPaymentProof(null);
-
-        if (fileImagesRef.current) fileImagesRef.current.value = "";
-        if (filePaymentRef.current) filePaymentRef.current.value = "";
-      } else {
-        setErrorMsg(res.data.message || "Something went wrong.");
-        setErrorModalOpen(true);
-      }
-    } catch (err) {
-      console.error("Submit Error =>", err);
-      setErrorMsg(err.response?.data?.message || err.message);
-      setErrorModalOpen(true);
+      alert("Advertisement submitted successfully!");
+      navigate("/ads/my");
+    } catch (err: any) {
+      alert(err.response?.data?.message || "Upload failed");
     } finally {
-      setUploading(false);
+      setLoading(false);
     }
   };
 
+  // ================= UI =================
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-extrabold mb-6">Create an Advertisement</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow">
         
-        {/* BASIC FIELDS */}
-        <div>
-          <label className="block mb-1 font-medium">Ad Title *</label>
-          <input className="w-full border px-3 py-2 rounded" value={title} onChange={(e) => setTitle(e.target.value)} />
-        </div>
+        <input className="w-full border px-3 py-2 rounded" placeholder="Ad Title *" value={title} onChange={e => setTitle(e.target.value)} />
+        <input className="w-full border px-3 py-2 rounded" placeholder="Business Name *" value={businessName} onChange={e => setBusinessName(e.target.value)} />
+        <textarea className="w-full border px-3 py-2 rounded" rows={4} placeholder="Description *" value={description} onChange={e => setDescription(e.target.value)} />
 
-        <div>
-          <label className="block mb-1 font-medium">Business Name *</label>
-          <input className="w-full border px-3 py-2 rounded" value={businessName} onChange={(e) => setBusinessName(e.target.value)} />
-        </div>
-
-        <div>
-          <label className="block mb-1 font-medium">Description *</label>
-          <textarea className="w-full border px-3 py-2 rounded" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} />
-        </div>
-
-        {/* CONTACT */}
         <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="block mb-1 font-medium">Phone *</label>
-            <input className="w-full border px-3 py-2 rounded" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} />
-          </div>
-
-          <div>
-            <label className="block mb-1 font-medium">Email *</label>
-            <input className="w-full border px-3 py-2 rounded" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} />
-          </div>
+          <input className="border px-3 py-2 rounded" placeholder="Phone *" value={contactPhone} onChange={e => setContactPhone(e.target.value)} />
+          <input className="border px-3 py-2 rounded" placeholder="Email *" value={contactEmail} onChange={e => setContactEmail(e.target.value)} />
         </div>
 
-        {/* DURATION */}
-        <div>
-          <label className="block mb-1 font-medium">Duration (days)</label>
-          <select className="w-full border px-3 py-2 rounded" value={requestedDuration} onChange={(e) => setRequestedDuration(Number(e.target.value))}>
-            {[3, 7, 10, 14, 21, 30].map((d) => <option key={d}>{d}</option>)}
-          </select>
-        </div>
+        <select
+          className="border px-3 py-2 rounded w-full"
+          value={requestedDuration}
+          onChange={e => setRequestedDuration(Number(e.target.value))}
+        >
+          {[3, 7, 10, 14, 21, 30].map(d => (
+            <option key={d}>{d}</option>
+          ))}
+        </select>
 
-        {/* IMAGES */}
+        {/* ================= IMAGE UPLOAD ================= */}
         <div>
-          <label className="block mb-1 font-medium">Ad Images *</label>
-          <input ref={fileImagesRef} type="file" accept="image/*" multiple onChange={onImagesChange} />
-          {imagePreviews.length > 0 && (
-            <div className="grid grid-cols-3 gap-3 mt-3">
-              {imagePreviews.map((src, i) => (
-                <img key={i} src={src} className="w-full h-28 object-cover rounded" />
+          <label className="font-semibold">Upload Images (up to 5)</label>
+          <input ref={imageInputRef} type="file" accept="image/*" multiple onChange={handleImagesChange} />
+
+          {previews.length > 0 && (
+            <div className="grid grid-cols-5 gap-3 mt-3">
+              {previews.map((src, i) => (
+                <div key={i} className="relative">
+                  <img src={src} className="h-24 w-full object-cover rounded border" />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(i)}
+                    className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-2"
+                  >
+                    ✕
+                  </button>
+                </div>
               ))}
             </div>
           )}
         </div>
 
-        {/* PAYMENT PROOF */}
+        {/* ================= PAYMENT ================= */}
         <div>
-          <label className="block mb-1 font-medium">Payment Proof (JPG/PNG) *</label>
-          <input ref={filePaymentRef} type="file" accept=".jpg,.jpeg,.png" onChange={onPaymentProofChange} />
+          <label className="font-semibold block mb-1">
+            Payment Proof (after QR payment) *
+          </label>
+
+          <button
+            type="button"
+            onClick={() => setShowQRModal(true)}
+            className="mb-2 px-4 py-2 bg-blue-600 text-white rounded"
+          >
+            Pay via QR Code
+          </button>
+
+          <input
+            ref={paymentRef}
+            type="file"
+            accept="image/*"
+            onChange={handlePaymentProof}
+          />
+
           {paymentProof && (
             <div className="mt-3 flex items-center gap-3">
-              <img src={URL.createObjectURL(paymentProof)} className="w-20 h-16 object-cover rounded" />
-              <p className="text-sm">{paymentProof.name}</p>
+              <img
+                src={URL.createObjectURL(paymentProof)}
+                className="w-24 h-20 object-cover rounded border"
+              />
+              <span className="text-sm text-green-700 font-semibold">
+                Payment proof uploaded
+              </span>
             </div>
           )}
         </div>
 
-        <button disabled={uploading} className="px-6 py-3 rounded bg-secondary text-white">
-          {uploading ? "Uploading..." : "Submit Advertisement"}
+        <button
+          disabled={loading}
+          className="w-full py-3 bg-neutral-900 text-white rounded"
+        >
+          {loading ? "Submitting..." : "Submit Advertisement"}
         </button>
       </form>
 
-      <Modal open={successModalOpen} title="Success!" message="Advertisement submitted! Pending admin approval." onClose={() => { setSuccessModalOpen(false); navigate("/ads/my"); }} />
-      <Modal open={errorModalOpen} title="Error" message={errorMsg} onClose={() => setErrorModalOpen(false)} />
+      {/* ================= QR MODAL ================= */}
+      <PaymentQRModal
+        open={showQRModal}
+        onClose={() => setShowQRModal(false)}
+      />
     </div>
   );
 };

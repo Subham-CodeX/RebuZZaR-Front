@@ -104,12 +104,12 @@ const Footer = () => {
                 </a>
               </li>
 
-              <li className="flex items-start">
+              {/* <li className="flex items-start">
                 <TwitterIcoon />
                 <a href="https://x.com/ZRebu39201?t=MWcgHUeOxbKaaH3LZ0LMng&s=09" className="ml-3 text-sm hover:text-white" target="_blank">
                   Twitter
                 </a>
-              </li>
+              </li> */}
 
               <li className="flex items-center">
                 <FacebookIcon />

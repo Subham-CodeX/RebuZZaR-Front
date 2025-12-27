@@ -1,44 +1,54 @@
-// src/components/AdCard.tsx
-import React from "react";
+import { useNavigate } from "react-router-dom";
 
-type Ad = {
-  _id: string;
-  title: string;
-  description: string;
-  images?: string[];
-  businessName?: string;
-  contactPhone?: string;
-  contactEmail?: string;
-  paymentUPI?: string;
-  amountPaid?: number;
-  status?: string; // pending | approved | rejected | expired
-  approvedAt?: string;
-  expiresAt?: string;
-  ownerId?: any;
+const STATUS_STYLES: Record<string, string> = {
+  pending: "bg-yellow-100 text-yellow-800 border-yellow-300",
+  approved: "bg-green-100 text-green-800 border-green-300",
+  rejected: "bg-red-100 text-red-800 border-red-300",
+  expired: "bg-gray-200 text-gray-700 border-gray-400",
 };
 
-const AdCard: React.FC<{ ad: Ad; showContact?: boolean }> = ({ ad, showContact = false }) => {
-  const images = Array.isArray(ad.images) && ad.images.length ? ad.images : ["/placeholder-ad.png"];
-  return (
-    <div className="border rounded-lg overflow-hidden bg-white shadow-sm">
-      <div className="h-44 bg-gray-100 overflow-hidden">
-        <img src={images[0]} alt={ad.title} className="w-full h-full object-cover" />
-      </div>
-      <div className="p-4">
-        <h3 className="font-bold text-lg">{ad.title}</h3>
-        <p className="text-sm text-neutral-600 mt-1 line-clamp-3">{ad.description}</p>
+const AdCard = ({ ad, showContact = false }: any) => {
+  const navigate = useNavigate();
+  const image = ad.images?.[0] || "/placeholder-ad.png";
 
-        <div className="mt-3 text-sm text-neutral-500">
-          <div><strong>Business:</strong> {ad.businessName}</div>
-          <div><strong>Status:</strong> <span className="capitalize">{ad.status}</span></div>
-          {ad.approvedAt && <div><strong>Approved:</strong> {new Date(ad.approvedAt).toLocaleDateString()}</div>}
+  return (
+    <div
+      onClick={() => navigate(`/ads/${ad._id}`)}
+      className="cursor-pointer border rounded-lg bg-white shadow hover:shadow-lg transition"
+    >
+      {/* IMAGE */}
+      <img
+        src={image}
+        alt={ad.title}
+        className="h-44 w-full object-cover rounded-t-lg"
+      />
+
+      <div className="p-4 text-left space-y-2">
+        {/* TITLE + STATUS */}
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="font-bold text-lg line-clamp-1">{ad.title}</h3>
+
+          {ad.status && (
+            <span
+              className={`text-xs font-semibold px-2 py-1 rounded border ${
+                STATUS_STYLES[ad.status] || "bg-gray-100 text-gray-800"
+              }`}
+            >
+              {ad.status.toUpperCase()}
+            </span>
+          )}
         </div>
 
+        {/* DESCRIPTION */}
+        <p className="text-sm text-neutral-600 line-clamp-2">
+          {ad.description}
+        </p>
+
+        {/* CONTACT (OPTIONAL) */}
         {showContact && (
-          <div className="mt-3">
-            <div className="text-sm"><strong>Phone:</strong> {ad.contactPhone}</div>
-            <div className="text-sm"><strong>Email:</strong> {ad.contactEmail}</div>
-            <div className="text-sm"><strong>UPI:</strong> {ad.paymentUPI}</div>
+          <div className="pt-2 text-sm space-y-1">
+            <p><strong>Phone:</strong> {ad.contactPhone}</p>
+            <p><strong>Email:</strong> {ad.contactEmail}</p>
           </div>
         )}
       </div>

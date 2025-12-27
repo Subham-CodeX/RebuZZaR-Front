@@ -41,11 +41,12 @@ const PublicAds = () => {
           <p className="text-xl text-neutral-600">No active advertisements at this moment.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {ads.map((ad) => (
+       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {ads.map(ad => (
             <AdCard key={ad._id} ad={ad} />
           ))}
-        </div>
+       </div>
+
       )}
     </div>
   );

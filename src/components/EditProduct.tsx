@@ -64,7 +64,7 @@ const EditProduct = () => {
         const response = await fetch(`${apiUrl}/api/products/${id}`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json',
+                // 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({ title, price: Number(price), description, category })

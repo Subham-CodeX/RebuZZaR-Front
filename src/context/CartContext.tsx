@@ -8,7 +8,8 @@ interface CartItem {
   productId: string; // or string | { toString(): string } if you expect ObjectId
   title: string;
   price: number;
-  imageUrl?: string[]; 
+  // imageUrl?: string[]; 
+  productImage?: string;
   quantity: number;
   sellerId?: string;
 }

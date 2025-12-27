@@ -235,7 +235,7 @@ const Home = ({ products, loading, error }: HomeProps) => {
             </div>
           </div>
         ) : (
-          <div className="text-center py-20 px-4 bg-neutral-100 mt-12 rounded-lg shadow-sm">
+          <div className="text-center py-10 px-4 bg-neutral-100 mt-12 rounded-lg shadow-sm">
             <EmptyStateIcon />
             <h2 className="mt-6 text-2xl font-semibold text-neutral-700">The Marketplace is Empty</h2>
             <p className="mt-2 text-neutral-600 max-w-md mx-auto">
@@ -246,7 +246,7 @@ const Home = ({ products, loading, error }: HomeProps) => {
       </div>
 
       {/* Story Section */}
-      <div className="bg-neutral-100 pt-16 pb-20">
+      <div className="bg-neutral-100 pt-16 pb-10">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h3 className="text-sm font-semibold text-primary-dark uppercase tracking-wider">Our Story</h3>
           <h2 className="mt-2 text-3xl font-extrabold text-neutral-900">The Spark of an Idea</h2>
@@ -265,7 +265,7 @@ const Home = ({ products, loading, error }: HomeProps) => {
       </div>
 
       {/* Core Values */}
-      <div className="bg-neutral-100 py-20">
+      <div className="bg-neutral-100 py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h3 className="text-sm font-semibold text-primary-dark uppercase tracking-wider">Our Philosophy</h3>
@@ -293,7 +293,7 @@ const Home = ({ products, loading, error }: HomeProps) => {
       </div>
 
       {/* FAQ Section */}
-      <div className="bg-neutral-50 py-20 px-4">
+      <div className="bg-neutral-50 py-10 px-4">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-extrabold text-neutral-900 text-center mb-12">Frequently Asked Questions</h2>
 

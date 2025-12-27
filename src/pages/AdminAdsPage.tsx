@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../lib/api";
 import { withAuthHeaders } from "../lib/api";
+import AdImagesSlider from "../components/AdImagesSlider";
 
 const AdminAdsPage = () => {
   const [ads, setAds] = useState<any[]>([]);
@@ -10,7 +11,7 @@ const AdminAdsPage = () => {
   const fetchPendingAds = async () => {
     try {
       const res = await api.get("/api/admin/ads/pending", withAuthHeaders(token));
-      setAds(res.data.pending || []);
+      setAds(res.data.ads || []);
     } catch (err) {
       console.error("Fetch error:", err);
     } finally {
@@ -67,10 +68,8 @@ const AdminAdsPage = () => {
                 <strong>Phone:</strong> {ad.contactPhone}
               </div>
 
-              <div className="mt-3 grid grid-cols-3 gap-3">
-                {ad.images?.map((img: string, idx: number) => (
-                  <img key={idx} src={img} alt="ad" className="rounded w-full h-28 object-cover" />
-                ))}
+              <div className="mt-4">
+                <AdImagesSlider images={ad.images} title={ad.title} />
               </div>
 
               <div className="mt-3">

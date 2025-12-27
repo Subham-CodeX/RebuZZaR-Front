@@ -65,11 +65,12 @@ const AdPopup = () => {
       <p className="text-sm text-gray-600">{ad.description}</p>
       {/* CTA Button */}
       <a
-        href="/ads"
-        className="mt-3 inline-block px-4 py-2 bg-secondary text-white rounded-lg text-sm hover:opacity-90"
+        href={`/ads/${ad._id}`}
+        className="mt-3 inline-block px-4 py-2 bg-secondary text-white rounded-lg text-sm"
       >
         View More
-      </a>
+    </a>
+
     </div>
   );
 };

@@ -160,14 +160,14 @@ const ProductDetail = () => {
                                     </button>
                                 </div> */}
                                 <div className="mt-auto pt-8 hidden md:flex flex-col sm:flex-row gap-4">
-                                    {product.isBooked ? (
+                                    {product.quantity <= 0 ? (
                                         <button
-                                        disabled
-                                        className="flex-1 py-3 px-6 rounded-lg font-semibold text-white bg-gray-400 cursor-not-allowed opacity-80"
+                                            disabled
+                                            className="flex-1 py-3 px-6 rounded-lg font-semibold text-white bg-gray-400 cursor-not-allowed opacity-80"
                                         >
-                                        Sold Out
-                                        </button>
-                                    ) : (
+                                            Sold Out
+                                            </button>
+                                        ) : (
                                         <>
                                         <button
                                             onClick={() => addToCart(product)}
@@ -235,14 +235,15 @@ const ProductDetail = () => {
                 </button>
             </div> */}
             <div className="sticky bottom-0 left-0 right-0 bg-white/80 backdrop-blur-sm p-3 flex gap-3 md:hidden z-40 border-t border-gray-200 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
-                {product.isBooked ? (
+                {product.quantity <= 0 ? (
                     <button
-                    disabled
-                    className="w-full bg-gray-400 text-white py-3 px-4 rounded-lg font-semibold cursor-not-allowed opacity-80"
+                        disabled
+                        className="w-full bg-gray-400 text-white py-3 px-4 rounded-lg font-semibold cursor-not-allowed opacity-80"
                     >
-                    Sold Out
+                        Sold Out
                     </button>
-                ) : (
+                    ) : (
+
                     <>
                     <button
                         onClick={() => addToCart(product)}

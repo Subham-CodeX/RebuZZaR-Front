@@ -7,7 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { debug } from "./utils/debug";
 import { useAuth } from "./context/AuthContext";
 
-import AdminRoute from "./components/AdminRoute";
+// import AdminRoute from "./components/AdminRoute";
 import Navbar from "./components/Navbar";
 import Main from "./components/Main";
 import Menubar from "./components/Menubar";
@@ -36,6 +36,10 @@ import PublicAds from "./pages/PublicAds";
 import AdsList from "./pages/AdsList";
 import Advertise from "./pages/Advertise";
 import AdminAdsPage from "./pages/AdminAdsPage";
+import AdDetail from "./pages/AdDetail";
+
+import AdminRoute from './components/AdminRoute';
+import AdminPendingProducts from './components/AdminPendingProducts';
 
 // ⭐ NEW — Advertisement Popup
 import AdPopup from "./components/AdPopup";
@@ -44,7 +48,7 @@ import AdPopup from "./components/AdPopup";
 import ScrollToTop from "./components/ScrollToTop";
 
 // Lazy Admin Component
-const AdminPendingProducts = lazy(() => import("./components/AdminPendingProducts"));
+// const AdminPendingProducts = lazy(() => import("./components/AdminPendingProducts"));
 
 const App: React.FC = () => {
   const [search, setSearch] = useState<string>("");
@@ -103,16 +107,15 @@ const App: React.FC = () => {
           <Route path="/advertisements" element={<AdsList />} />
           <Route path="/advertise" element={<Advertise />} />
           <Route path="/admin/ads" element={<AdminAdsPage />} />
+          <Route path="/ads/:id" element={<AdDetail />} />
 
-          {/* Admin routes */}
+          {/* Admin routes  of pending products*/}
           <Route
-            path="/admin/pending-products"
+            path="/admin/products"
             element={
-              <Suspense fallback={<div>Loading admin dashboard...</div>}>
-                <AdminRoute>
-                  <AdminPendingProducts />
-                </AdminRoute>
-              </Suspense>
+              <AdminRoute>
+                <AdminPendingProducts />
+              </AdminRoute>
             }
           />
         </Routes>

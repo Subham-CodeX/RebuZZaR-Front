@@ -22,124 +22,93 @@ const CreateAd = () => {
   const handleChange = (e: any) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
+  // ✅ Add images (max 5)
+  const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length + images.length > 5) {
+      alert("You can upload maximum 5 images");
+      return;
+    }
+    setImages(prev => [...prev, ...files]);
+  };
+
+  const removeImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
   const submitAd = async () => {
-  const token =
-    localStorage.getItem("authToken") ||
-    localStorage.getItem("token") ||
-    localStorage.getItem("accessToken");
+    const token =
+      localStorage.getItem("authToken") ||
+      localStorage.getItem("token") ||
+      localStorage.getItem("accessToken");
 
-  if (!token) {
-    alert("You are not logged in.");
-    return;
-  }
+    if (!token) return alert("You are not logged in");
 
-  const fd = new FormData();
+    const fd = new FormData();
+    Object.entries(form).forEach(([k, v]) => fd.append(k, v));
+    images.forEach(img => fd.append("images", img));
+    if (paymentProof) fd.append("paymentProof", paymentProof);
 
-  Object.entries(form).forEach(([key, value]) => fd.append(key, value));
-  images.forEach((img) => fd.append("images", img));
-  if (paymentProof) fd.append("paymentProof", paymentProof);
-
-  setLoading(true);
-
-  try {
-    await axios.post(`${API}/api/ads/create`, fd, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    alert("Advertisement submitted successfully!");
-  } catch (err) {
-    alert("Error submitting advertisement");
-  } finally {
-    setLoading(false);
-  }
-};
+    setLoading(true);
+    try {
+      await axios.post(`${API}/api/ads/create`, fd, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert("Advertisement submitted successfully!");
+      setImages([]);
+      setPaymentProof(null);
+    } catch (err: any) {
+      alert(err.response?.data?.message || "Submission failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-3xl font-bold text-neutral-800 mb-6">
-        Create Your Advertisement
-      </h1>
+      <h1 className="text-3xl font-bold mb-6">Create Advertisement</h1>
 
       <div className="space-y-4">
-        <input
-          name="title"
-          onChange={handleChange}
-          placeholder="Advertisement Title"
-          className="w-full p-3 border rounded"
-        />
+        <input name="title" onChange={handleChange} placeholder="Title" className="w-full p-3 border rounded" />
+        <textarea name="description" onChange={handleChange} placeholder="Description" className="w-full p-3 border rounded" />
+        <input name="businessName" onChange={handleChange} placeholder="Business Name" className="w-full p-3 border rounded" />
+        <input name="contactPhone" onChange={handleChange} placeholder="Phone" className="w-full p-3 border rounded" />
+        <input name="contactEmail" onChange={handleChange} placeholder="Email" className="w-full p-3 border rounded" />
+        <input name="paymentUPI" onChange={handleChange} placeholder="UPI ID" className="w-full p-3 border rounded" />
+        <input name="amountPaid" onChange={handleChange} placeholder="Amount Paid" className="w-full p-3 border rounded" />
+        <input name="requestedDuration" type="number" onChange={handleChange} placeholder="Duration (days)" className="w-full p-3 border rounded" />
 
-        <textarea
-          name="description"
-          onChange={handleChange}
-          placeholder="Description"
-          className="w-full p-3 border rounded"
-        />
+        {/* Upload images */}
+        <input type="file" multiple accept="image/*" onChange={handleImagesChange} />
 
-        <input
-          name="businessName"
-          onChange={handleChange}
-          placeholder="Business / Shop Name"
-          className="w-full p-3 border rounded"
-        />
+        {/* Image previews */}
+        {images.length > 0 && (
+          <div className="grid grid-cols-5 gap-3">
+            {images.map((img, idx) => (
+              <div key={idx} className="relative">
+                <img
+                  src={URL.createObjectURL(img)}
+                  className="h-24 w-full object-cover rounded border"
+                />
+                <button
+                  onClick={() => removeImage(idx)}
+                  className="absolute top-1 right-1 bg-red-600 text-white text-xs rounded-full px-2"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
-        <input
-          name="contactPhone"
-          onChange={handleChange}
-          placeholder="Phone Number"
-          className="w-full p-3 border rounded"
-        />
-
-        <input
-          name="contactEmail"
-          onChange={handleChange}
-          placeholder="Email Address"
-          className="w-full p-3 border rounded"
-        />
-
-        <input
-          name="paymentUPI"
-          onChange={handleChange}
-          placeholder="Your UPI ID"
-          className="w-full p-3 border rounded"
-        />
-
-        <input
-          name="amountPaid"
-          onChange={handleChange}
-          placeholder="Amount Paid"
-          className="w-full p-3 border rounded"
-        />
-
-        <input
-          name="requestedDuration"
-          type="number"
-          onChange={handleChange}
-          placeholder="Duration (days)"
-          className="w-full p-3 border rounded"
-        />
-
-        <input
-          type="file"
-          multiple
-          onChange={(e) =>
-            setImages(Array.from(e.target.files || []))
-          }
-          className="w-full"
-        />
-
-        <input
-          type="file"
-          onChange={(e) =>
-            setPaymentProof(e.target.files?.[0] || null)
-          }
-          className="w-full"
-        />
+        {/* Payment proof */}
+        <label className="font-semibold block">Upload Payment Proof</label>
+        <input type="file" accept="image/*" onChange={e => setPaymentProof(e.target.files?.[0] || null)} />
 
         <button
           onClick={submitAd}
-          className="w-full py-3 bg-neutral-900 text-white rounded hover:bg-neutral-700"
+          disabled={loading}
+          className="w-full py-3 bg-neutral-900 text-white rounded"
         >
           {loading ? "Submitting..." : "Submit Advertisement"}
         </button>
