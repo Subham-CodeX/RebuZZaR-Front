@@ -85,7 +85,7 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  +91 89004 09172
+                  +91 ------------
                 </a>
               </li>
             </ul>

@@ -1,76 +1,123 @@
 import { useEffect, useState } from "react";
 import api from "../lib/api";
+import "../styles/adPopup.css";
+import { useIsMobile } from "../hooks/useIsMobile";
 
-const POSITIONS = [
-  "bottom-right",
-  "bottom-left",
-  "top-right",
+const DESKTOP_POSITIONS = [
   "top-left",
+  "top-right",
+  "bottom-left",
+  "bottom-right",
 ];
+
+const MOBILE_POSITIONS = [
+  "top-center",
+  "bottom-center",
+];
+
+const getRandomPosition = (isMobile: boolean) => {
+  const list = isMobile ? MOBILE_POSITIONS : DESKTOP_POSITIONS;
+  return list[Math.floor(Math.random() * list.length)];
+};
 
 const AdPopup = () => {
   const [ads, setAds] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visible, setVisible] = useState(true);
-  const [position, setPosition] = useState("bottom-right");
+  const [position, setPosition] = useState<string>("bottom-right");
 
-  // Fetch approved ads
+  const isMobile = useIsMobile();
+
+  // Fetch ads
   useEffect(() => {
     (async () => {
-      const res = await api.get("/api/ads/public");
-      setAds(res.data.ads || []);
+      try {
+        const res = await api.get("/api/ads/public");
+        setAds(res.data.ads || []);
+      } catch (err) {
+        console.error("Failed to load ads", err);
+      }
     })();
   }, []);
 
-  // Rotate ads every 30 seconds
+  // Rotate ad + position every 30s
   useEffect(() => {
     if (ads.length === 0) return;
 
     const interval = setInterval(() => {
       setCurrentIndex((i) => (i + 1) % ads.length);
+      setPosition(getRandomPosition(isMobile));
       setVisible(true);
-      setPosition(POSITIONS[Math.floor(Math.random() * POSITIONS.length)]);
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [ads]);
+  }, [ads, isMobile]);
 
   if (ads.length === 0 || !visible) return null;
 
   const ad = ads[currentIndex];
 
+  // Position classes
+  const positionClass = {
+    "top-left": "top-4 left-4",
+    "top-right": "top-4 right-4",
+    "bottom-left": "bottom-4 left-4",
+    "bottom-right": "bottom-4 right-4",
+    "top-center": "top-4 left-1/2 -translate-x-1/2",
+    "bottom-center": "bottom-4 left-1/2 -translate-x-1/2",
+  }[position];
+
   return (
     <div
-      className={`fixed z-50 p-4 w-80 bg-white shadow-xl rounded-xl border transition-all
-        ${position === "bottom-right" && "bottom-4 right-4"}
-        ${position === "bottom-left" && "bottom-4 left-4"}
-        ${position === "top-right" && "top-4 right-4"}
-        ${position === "top-left" && "top-4 left-4"}
+      className={`
+        fixed z-50
+        bg-white border shadow-xl rounded-xl
+        p-3 w-[280px]
+        transition-all duration-300
+        ${positionClass}
+        ${isMobile ? "ad-mobile-slide" : ""}
       `}
     >
-      <button 
-        className="absolute top-2 right-2 text-gray-600"
+      {/* Close */}
+      <button
+        className="absolute top-2 right-2 text-gray-500 hover:text-black"
         onClick={() => setVisible(false)}
       >
         ✕
       </button>
 
-      <img 
-        src={ad.images?.[0]} 
-        className="w-full h-32 object-cover rounded-md mb-3" 
+      {/* Image */}
+      <img
+        src={ad.images?.[0]}
+        alt={ad.title}
+        className="w-full h-28 object-cover rounded-md mb-2"
       />
 
-      <h3 className="font-semibold text-lg">{ad.title}</h3>
-      <p className="font-semibold text-lg">{ad.businessName}</p>
-      <p className="text-sm text-gray-600">{ad.description}</p>
-      {/* CTA Button */}
+      {/* Content */}
+      <h3 className="font-semibold text-sm leading-tight">
+        {ad.title}
+      </h3>
+
+      <p className="font-medium text-sm text-gray-800">
+        {ad.businessName}
+      </p>
+
+      <p className="text-xs text-gray-600 line-clamp-2 mt-1">
+        {ad.description}
+      </p>
+
+      {/* CTA */}
       <a
         href={`/ads/${ad._id}`}
-        className="mt-3 inline-block px-4 py-2 bg-secondary text-white rounded-lg text-sm"
+        className="
+          mt-2 block w-full text-center
+          px-3 py-1.5
+          bg-secondary text-white rounded-lg
+          text-xs font-semibold
+        "
       >
         View More
-    </a>
-
+      </a>
     </div>
   );
 };

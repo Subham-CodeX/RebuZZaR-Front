@@ -40,7 +40,7 @@ import AdDetail from "./pages/AdDetail";
 
 import AdminRoute from './components/AdminRoute';
 import AdminPendingProducts from './components/AdminPendingProducts';
-
+import GoogleAuthSuccess from './pages/GoogleAuthSuccess';
 // ⭐ NEW — Advertisement Popup
 import AdPopup from "./components/AdPopup";
 
@@ -94,6 +94,8 @@ const App: React.FC = () => {
           <Route path="/booking-success" element={<BookingSuccess />} />
           <Route path="/edit-product/:id" element={<EditProduct />} />
           <Route path="/edit-profile" element={<EditProfile />} />
+          <Route path="/google-auth-success" element={<GoogleAuthSuccess />} />
+
 
           {/* Legal */}
           <Route path="/legal/terms-and-conditions" element={<TermsAndConditions />} />

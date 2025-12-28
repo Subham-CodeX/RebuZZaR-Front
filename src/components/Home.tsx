@@ -28,7 +28,7 @@ const ProductImagesSlider = ({ images, title }: { images: string[]; title: strin
       <img
         src={images[0]}
         alt={title}
-        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+        className="w-full h-36 sm:h-48 object-cover group-hover:scale-105 transition-transform duration-300"
       />
     );
   }
@@ -85,7 +85,7 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
           open ? "max-h-96" : "max-h-0"
         }`}
       >
-        <p className="py-2 text-neutral-600">{answer}</p>
+        <p className="py-2 text-sm sm:text-base text-neutral-600">{answer}</p>
       </div>
     </div>
   );
@@ -185,7 +185,7 @@ const Home = ({ products, loading, error }: HomeProps) => {
             <h2 className="text-3xl font-bold text-center text-neutral-800 mb-8">
               Recently Added Items
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
               {products.map((data) => (
                 <Link to={`/product/${data._id}`} key={data._id} className="group relative">
                   <div className="h-full flex flex-col border border-neutral-200 rounded-lg shadow-sm hover:shadow-2xl transition-shadow duration-300 bg-white overflow-hidden relative">
@@ -206,21 +206,21 @@ const Home = ({ products, loading, error }: HomeProps) => {
                     </div>
 
                     {/* Product Info */}
-                    <div className="p-4 flex flex-col flex-grow">
-                      <h2 className="font-bold text-lg truncate mb-1 text-neutral-700 group-hover:text-neutral-900 transition-colors">
+                    <div className="p-3 sm:p-4 flex flex-col flex-grow">
+                      <h2 className="font-bold text-sm sm:text-lg truncate mb-1 text-neutral-700 group-hover:text-neutral-900 transition-colors">
                         {data.title}
                       </h2>
                       <p className="text-sm text-neutral-500 mb-2">{data.category}</p>
-                      <p className="text-xl font-semibold text-neutral-900 mb-4 group-hover:text-neutral-900 transition-colors">
+                      <p className="text-base sm:text-xl font-semibold text-neutral-900 mb-1 sm:mb-4 group-hover:text-neutral-900 transition-colors">
                         ₹{data.price.toLocaleString("en-IN")}
                       </p>
 
-                      <div className="flex-grow"></div>
+                      <div className="flex-grow hidden sm:block"></div>
 
                       {/* View Details / Sold Out Button */}
                       <button
                         disabled={data.isBooked}
-                        className={`w-full mt-2 py-2 rounded-md font-semibold transition-colors ${
+                        className={`w-full mt-1 sm:mt-2 py-2 rounded-md font-semibold transition-colors ${
                           data.isBooked
                             ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                             : "bg-neutral-600 text-white hover:bg-neutral-900"

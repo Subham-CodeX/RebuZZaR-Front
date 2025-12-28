@@ -12,13 +12,14 @@ const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
   console.log("AdminRoute receiving:", { user, isLoading });
 
   // 1. If the auth state is still loading, show a temporary message.
-  if (isLoading) {
-    return <div>Loading user...</div>;
-  }
+  // if (isLoading) {
+  //   return <div>Loading user...</div>;
+  // }
+  if (isLoading) return null;
 
   // 2. If loading is finished and there's no user, redirect to login.
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   // 3. If loading is finished and the user is not an admin, redirect to home.

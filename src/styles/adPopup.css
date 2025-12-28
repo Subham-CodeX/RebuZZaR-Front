@@ -1,0 +1,48 @@
+/* ================================
+   Mobile Ad Popup Animation
+   ================================ */
+
+@keyframes adPopupEnter {
+  0% {
+    transform: translate(-50%, 120%) scale(0.96);
+    opacity: 0;
+  }
+
+  60% {
+    transform: translate(-50%, -6%) scale(1.01);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Optional subtle exit animation (future use) */
+@keyframes adPopupExit {
+  from {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, 120%) scale(0.96);
+    opacity: 0;
+  }
+}
+
+/* Mobile-only animation */
+@media (max-width: 640px) {
+  .ad-mobile-slide {
+    animation: adPopupEnter 0.45s
+      cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform, opacity;
+  }
+}
+
+/* Accessibility: Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ad-mobile-slide {
+    animation: none;
+  }
+}
