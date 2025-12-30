@@ -4,9 +4,9 @@ import {
   useContext,
   ReactNode,
   useEffect,
-} from 'react';
-import { jwtDecode } from 'jwt-decode';
-import { logError } from '../utils/logError';
+} from "react";
+import { jwtDecode } from "jwt-decode";
+import { logError } from "../utils/logError";
 
 const API = import.meta.env.VITE_BACKEND_URL;
 
@@ -18,11 +18,12 @@ export interface User {
   name: string;
   email: string;
   avatar?: string;
-  role: 'student' | 'admin';
+  role: "student" | "admin";
   studentCode?: string;
-  programType?: 'Diploma' | 'UG' | 'PG' | 'PhD';
+  programType?: "Diploma" | "UG" | "PG" | "PhD";
   department?: string;
-  year?: '1st' | '2nd' | '3rd' | '4th' | '5th';
+  year?: "1st" | "2nd" | "3rd" | "4th" | "5th";
+  hasSeenWelcome?: boolean;
 }
 
 /* =======================
@@ -32,6 +33,8 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   isLoading: boolean;
+  justSignedUp: boolean;
+  setJustSignedUp: (v: boolean) => void;
   login: (user: User | null, token: string) => void;
   logout: () => void;
   updateUser: (user: User) => void;
@@ -50,6 +53,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // ⭐ session-only flag (NOT persisted)
+  const [justSignedUp, setJustSignedUp] = useState(false);
+
   /* =======================
      Fetch current user
   ======================= */
@@ -61,13 +67,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         },
       });
 
-      if (!res.ok) throw new Error('Failed to fetch user');
+      if (!res.ok) throw new Error("Failed to fetch user");
 
       const data = await res.json();
       setUser(data.user);
-      localStorage.setItem('authUser', JSON.stringify(data.user));
+      localStorage.setItem("authUser", JSON.stringify(data.user));
     } catch (err) {
-      logError('Auth fetchUser failed', err);
+      logError("Auth fetchUser failed", err);
       logout();
     }
   };
@@ -76,49 +82,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
      On App Load
   ======================= */
   useEffect(() => {
-  const initAuth = async () => {
-    const storedToken = localStorage.getItem('authToken');
-    if (!storedToken) {
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const decoded = jwtDecode<{ exp: number }>(storedToken);
-
-      if (decoded.exp * 1000 < Date.now()) {
-        logout();
+    const initAuth = async () => {
+      const storedToken = localStorage.getItem("authToken");
+      if (!storedToken) {
+        setIsLoading(false);
         return;
       }
 
-      setToken(storedToken);
-      await fetchUser(storedToken); // ✅ WAIT
-    } catch (err) {
-      logout();
-    } finally {
-      setIsLoading(false); // ✅ NOW SAFE
-    }
-  };
+      try {
+        const decoded = jwtDecode<{ exp: number }>(storedToken);
 
-  initAuth();
-}, []);
+        if (decoded.exp * 1000 < Date.now()) {
+          logout();
+          return;
+        }
 
+        setToken(storedToken);
+        await fetchUser(storedToken);
+      } catch {
+        logout();
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initAuth();
+  }, []);
 
   /* =======================
      Login (Email / Google)
   ======================= */
   const login = (userData: User | null, jwt: string) => {
     setToken(jwt);
-    localStorage.setItem('authToken', jwt);
+    localStorage.setItem("authToken", jwt);
 
-    // Email login → user already known
     if (userData) {
       setUser(userData);
-      localStorage.setItem('authUser', JSON.stringify(userData));
+      localStorage.setItem("authUser", JSON.stringify(userData));
     } else {
-      // Google login → fetch user
       fetchUser(jwt);
     }
+
+    // 🔴 IMPORTANT: login should NOT trigger welcome
+    setJustSignedUp(false);
   };
 
   /* =======================
@@ -127,8 +133,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('authUser');
-    localStorage.removeItem('authToken');
+    setJustSignedUp(false);
+    localStorage.removeItem("authUser");
+    localStorage.removeItem("authToken");
   };
 
   /* =======================
@@ -136,7 +143,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   ======================= */
   const updateUser = (userData: User) => {
     setUser(userData);
-    localStorage.setItem('authUser', JSON.stringify(userData));
+    localStorage.setItem("authUser", JSON.stringify(userData));
   };
 
   return (
@@ -145,6 +152,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         user,
         token,
         isLoading,
+        justSignedUp,
+        setJustSignedUp,
         login,
         logout,
         updateUser,
@@ -161,7 +170,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 };

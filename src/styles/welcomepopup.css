@@ -1,0 +1,82 @@
+/* Overlay */
+.welcome-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Popup Card */
+.welcome-popup {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px 28px;
+  width: 90%;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+}
+
+/* Animation */
+@keyframes welcomeScaleIn {
+  from {
+    transform: scale(0.85) translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-welcome {
+  animation: welcomeScaleIn 0.4s ease-out;
+}
+
+/* Text styles */
+.welcome-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #111827;
+}
+
+.welcome-text {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-bottom: 18px;
+}
+
+.welcome-points {
+  text-align: left;
+  margin: 0 0 22px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.welcome-points li {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+/* Button */
+.welcome-btn {
+  background: #f97316; /* RebuZZar orange */
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.welcome-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(249, 115, 22, 0.4);
+}

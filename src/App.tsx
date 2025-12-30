@@ -6,13 +6,14 @@ import "slick-carousel/slick/slick-theme.css";
 
 import { debug } from "./utils/debug";
 import { useAuth } from "./context/AuthContext";
+import api from "./lib/api";
 
 // Layout
 import Navbar from "./components/Navbar";
 import Menubar from "./components/Menubar";
 import Footer from "./components/Footer";
 
-// Pages & Components
+// Pages
 import Main from "./components/Main";
 import Profile from "./components/Profile";
 import EditProfile from "./components/EditProfile";
@@ -51,54 +52,74 @@ import { CartProvider } from "./context/CartContext";
 // Utilities
 import ScrollToTop from "./components/ScrollToTop";
 
-// ⭐ Advertisement Popup
+// UI Extras
 import AdPopup from "./components/AdPopup";
-
-// ⭐ WhatsApp Floating Button (NEW)
 import WhatsAppFloat from "./components/WhatsAppFloat";
+import WelcomePopup from "./components/WelcomePopup";
 import "./styles/whatsapp.css";
 
 const App: React.FC = () => {
-  const [search, setSearch] = useState<string>("");
-  const [menu, setMenu] = useState<string>("");
+  const [search, setSearch] = useState("");
+  const [menu, setMenu] = useState("");
+  const [showWelcome, setShowWelcome] = useState(false);
 
-  const { user } = useAuth();
+  const { user, justSignedUp, setJustSignedUp } = useAuth();
 
-  // Debug only in development
+  // Debug
   useEffect(() => {
-    debug("Logged-in user:", {
+    debug("User state:", {
       email: user?.email,
-      role: user?.role,
+      hasSeenWelcome: user?.hasSeenWelcome,
+      justSignedUp,
     });
-  }, [user]);
+  }, [user, justSignedUp]);
+
+  // ⭐ SHOW WELCOME ONLY ON SIGNUP SESSION
+  useEffect(() => {
+    if (
+      user &&
+      justSignedUp &&
+      user.hasSeenWelcome === false
+    ) {
+      setShowWelcome(true);
+    }
+  }, [user, justSignedUp]);
+
+  const closeWelcomePopup = async () => {
+    setShowWelcome(false);
+    setJustSignedUp(false);
+
+    try {
+      await api.post("/user/mark-welcome-seen");
+    } catch (err) {
+      console.error("Failed to mark welcome as seen", err);
+    }
+  };
 
   return (
     <CartProvider>
       <>
-        {/* 🔔 Toast Notifications */}
-        <Toaster position="top-center" reverseOrder={false} />
+        <Toaster position="top-center" />
 
-        {/* 🧭 Navbar */}
+        {showWelcome && (
+          <WelcomePopup
+            onClose={closeWelcomePopup}
+            userName={user?.name}
+          />
+        )}
+
         <Navbar setSearch={setSearch} setMenu={setMenu} />
 
-        {/* 📂 Menubar (Desktop only) */}
         <div className="hidden md:block">
           <Menubar setMenu={setMenu} />
         </div>
 
-        {/* ⬆️ Scroll to top on route change */}
         <ScrollToTop />
-
-        {/* ⭐ Global Advertisement Popup */}
         <AdPopup />
-
-        {/* 💬 GLOBAL WHATSAPP SUPPORT BUTTON (FREE) */}
         <WhatsAppFloat />
 
-        {/* 🚦 Routes */}
         <Routes>
           <Route path="/" element={<Main search={search} menu={menu} />} />
-
           <Route path="/sell" element={<Sell />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/edit-profile" element={<EditProfile />} />
@@ -112,23 +133,18 @@ const App: React.FC = () => {
 
           <Route path="/google-auth-success" element={<GoogleAuthSuccess />} />
 
-          {/* 📜 Legal */}
           <Route path="/legal/terms-and-conditions" element={<TermsAndConditions />} />
           <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/legal/return-refund-policy" element={<ReturnRefundPolicy />} />
           <Route path="/legal/faq" element={<FAQ />} />
 
-          {/* 📢 Advertisements */}
           <Route path="/ads/my" element={<MyAds />} />
           <Route path="/ads" element={<PublicAds />} />
           <Route path="/advertisements" element={<AdsList />} />
           <Route path="/advertise" element={<Advertise />} />
           <Route path="/ads/:id" element={<AdDetail />} />
 
-          {/* 🛡️ Admin Ads */}
           <Route path="/admin/ads" element={<AdminAdsPage />} />
-
-          {/* 🛠️ Admin Pending Products */}
           <Route
             path="/admin/products"
             element={
@@ -139,7 +155,6 @@ const App: React.FC = () => {
           />
         </Routes>
 
-        {/* 🦶 Footer */}
         <Footer />
       </>
     </CartProvider>
