@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import Login from "./Login";
 import RebuZZar from "../assets/RebuZZar.png";
+import Avatar from "../components/Avatar";
 
 const Navbar = ({ setSearch, setMenu }: { setSearch: (value: string) => void; setMenu: (value: string) => void; }) => {
   const [loginPop, setLoginPop] = useState(false);
@@ -91,14 +92,16 @@ const Navbar = ({ setSearch, setMenu }: { setSearch: (value: string) => void; se
             {user ? (
               <div className="relative group">
                 <button className="flex items-center gap-2 p-1 rounded-full hover:bg-neutral-200 transition-all">
-                  <img
-                    src={user.avatar || "https://via.placeholder.com/80x80?text=👤"}
-                    alt="User Avatar"
-                    className="w-10 h-10 rounded-full object-cover border"
-                  />
+                  <Avatar
+                      userId={user._id}
+                      src={user.avatar}
+                      size={40}
+                    />
+                    
                   <svg className="w-4 h-4 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
+                  {/* <ChevronIcon /> */}
                 </button>
 
                 {/* Dropdown */}
@@ -156,9 +159,10 @@ const Navbar = ({ setSearch, setMenu }: { setSearch: (value: string) => void; se
                   onClick={() => setProfileMenuOpen(!isProfileMenuOpen)}
                   className="p-1 rounded-full hover:bg-neutral-200 transition-all"
                 >
-                  <img
-                    src={user.avatar || "https://via.placeholder.com/80x80?text=👤"}
-                    className="w-9 h-9 rounded-full object-cover border"
+                  <Avatar
+                    userId={user._id}
+                    src={user.avatar}
+                    size={36}
                   />
                 </button>
 
@@ -167,11 +171,11 @@ const Navbar = ({ setSearch, setMenu }: { setSearch: (value: string) => void; se
                     <Link to="/profile" className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100">Profile</Link>
                     <Link to="/my-bookings" className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100">My Bookings</Link>
                     <Link to="/ads/my" className="block px-4 py-2 text-neutral-700 hover:bg-neutral-100">My Ads</Link>
-                    {/* ⭐ Mobile Admin Panel */}
+                    {/* ⭐ Mobile Admin Panel
                     {user?.role === "admin" && (
                       <Link to="/admin/ads" >
                       </Link>
-                    )}
+                    )} */}
 
                     <button onClick={logout} className="w-full text-left px-4 py-2 text-red-500 hover:bg-neutral-100">Logout</button>
                   </div>

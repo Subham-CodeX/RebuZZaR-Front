@@ -6,6 +6,8 @@ import { Product } from '../types';
 import { Link } from 'react-router-dom';
 import EmptyStateIcon from './EmptyStateIcon';
 import { motion } from 'framer-motion';
+import Avatar from '../components/Avatar';
+
 
 const Profile = () => {
   const { user, token, updateUser, logout } = useAuth();
@@ -174,21 +176,34 @@ const Profile = () => {
             <div className="flex flex-col sm:flex-row items-center gap-6 w-full sm:w-auto">
               <div className="relative flex-shrink-0">
                 {/* Avatar clickable */}
-                <motion.img
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => avatarInputRef.current?.click()}
-                  className="h-28 w-28 rounded-full ring-4 ring-neutral-300 shadow-lg object-cover cursor-pointer mx-auto sm:mx-0"
-                  src={user.avatar || 'https://via.placeholder.com/150'}
-                  alt="User Avatar"
-                />
-                <input
-                  type="file"
-                  accept="image/*"
-                  ref={avatarInputRef}
-                  onChange={handleAvatarChange}
-                  className="hidden"
-                />
+                <Avatar
+                    userId={user._id}        // 🔥 REQUIRED
+                    src={user.avatar}        // uploaded avatar (if exists)
+                    clickable
+                    onUpload={(file) => {
+                      const formData = new FormData();
+                      formData.append('avatar', file);
+
+                      toast.loading('Uploading avatar...', { id: 'avatar' });
+
+                      fetch(`${apiUrl}/api/profile/avatar`, {
+                        method: 'POST',
+                        headers: {
+                          Authorization: `Bearer ${token}`,
+                        },
+                        body: formData,
+                      })
+                        .then((res) => res.json())
+                        .then((data) => {
+                          updateUser(data);
+                          toast.success('Avatar updated!', { id: 'avatar' });
+                        })
+                        .catch(() => {
+                          toast.error('Failed to upload avatar', { id: 'avatar' });
+                        });
+                    }}
+                  />
+
               </div>
               <div className="text-center sm:text-left flex-1">
                 <h1 className="text-3xl font-extrabold text-neutral-800">{user.name}</h1>

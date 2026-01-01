@@ -130,13 +130,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   /* =======================
      Logout
   ======================= */
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    setJustSignedUp(false);
-    localStorage.removeItem("authUser");
-    localStorage.removeItem("authToken");
-  };
+  /* =======================
+   Logout (FIXED)
+======================= */
+const logout = async () => {
+  const jwt = localStorage.getItem("authToken");
+
+  try {
+    if (jwt) {
+      await fetch(`${API}/api/auth/logout`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      });
+    }
+  } catch (err) {
+    logError("Logout API failed", err);
+    // Do NOT block logout
+  }
+
+  // ✅ Clear frontend auth AFTER API call
+  setUser(null);
+  setToken(null);
+  setJustSignedUp(false);
+  localStorage.removeItem("authUser");
+  localStorage.removeItem("authToken");
+};
+
 
   /* =======================
      Update User

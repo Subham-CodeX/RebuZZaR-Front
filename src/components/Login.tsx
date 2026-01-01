@@ -5,6 +5,8 @@ import Select from 'react-select';
 import RebuZZar from "../assets/RebuZZar.png";
 import google from "../assets/google.png";
 import { useAuth } from '../context/AuthContext';
+import { Link } from "react-router-dom";
+
 
 type PopupProp = {
   setLoginPop: (value: boolean) => void;
@@ -436,9 +438,14 @@ const Login = (props: PopupProp) => {
               <div className="mt-6 space-y-4">{renderForm()}</div>
               <p className="mt-6 text-xs text-center text-neutral-500">
                 By continuing, you agree to RebuZZar's{' '}
-                <a href="#" className="font-medium text-neutral-700 hover:underline">
-                  Terms of Service
-                </a>.
+                <Link
+                  to="/legal/terms-and-conditions"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-neutral-700 hover:underline"
+                >
+                  Terms of Conditions
+                </Link>
               </p>
             </div>
           </div>
