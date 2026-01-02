@@ -4,7 +4,7 @@ import RebuZZar from "../assets/RebuZZar.png"; // Logo
 // ========================
 // CONFIG
 // ========================
-const ADMIN_WHATSAPP = "916295300085"; // no +, no spaces
+const ADMIN_WHATSAPP = "916295308500"; // no +, no spaces
 
 const WHATSAPP_MESSAGE = encodeURIComponent(
   "Hi RebuZZar Team 👋\nI need help regarding the website."
