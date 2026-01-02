@@ -1,11 +1,9 @@
 import { useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import PaymentQRModal from "../components/PaymentQRModal";
 
 const Advertise = () => {
-  const { user } = useAuth();
   const navigate = useNavigate();
   const BASE = (import.meta.env.VITE_BACKEND_URL || "").replace(/\/+$/, "");
 
@@ -83,9 +81,8 @@ const Advertise = () => {
     }
 
     const token =
-    localStorage.getItem("token") ??
-    localStorage.getItem("authToken");
-
+      localStorage.getItem("token") ??
+      localStorage.getItem("authToken");
 
     if (!token) return alert("Not logged in.");
 
@@ -123,7 +120,6 @@ const Advertise = () => {
       <h1 className="text-3xl font-extrabold mb-6">Create an Advertisement</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow">
-        
         <input className="w-full border px-3 py-2 rounded" placeholder="Ad Title *" value={title} onChange={e => setTitle(e.target.value)} />
         <input className="w-full border px-3 py-2 rounded" placeholder="Business Name *" value={businessName} onChange={e => setBusinessName(e.target.value)} />
         <textarea className="w-full border px-3 py-2 rounded" rows={4} placeholder="Description *" value={description} onChange={e => setDescription(e.target.value)} />
@@ -147,7 +143,7 @@ const Advertise = () => {
           ))}
         </select>
 
-        {/* ================= IMAGE UPLOAD ================= */}
+         {/* ================= IMAGE UPLOAD ================= */}
         <div>
           <label className="font-semibold">Upload Images (up to 5)</label>
           <input ref={imageInputRef} type="file" accept="image/*" multiple onChange={handleImagesChange} />
@@ -170,7 +166,7 @@ const Advertise = () => {
           )}
         </div>
 
-        {/* ================= PAYMENT ================= */}
+{/* ================= PAYMENT ================= */}
         <div>
           <label className="font-semibold block mb-1">
             Payment Proof (after QR payment) *
@@ -212,11 +208,7 @@ const Advertise = () => {
         </button>
       </form>
 
-      {/* ================= QR MODAL ================= */}
-      <PaymentQRModal
-        open={showQRModal}
-        onClose={() => setShowQRModal(false)}
-      />
+      <PaymentQRModal open={showQRModal} onClose={() => setShowQRModal(false)} />
     </div>
   );
 };

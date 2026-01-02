@@ -3,19 +3,28 @@ import { useParams } from "react-router-dom";
 import api from "../lib/api";
 import AdImagesSlider from "../components/AdImagesSlider";
 
+type AdDetailResponse = {
+  ad: any;
+};
+
 const AdDetail = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [ad, setAd] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+
     (async () => {
       try {
-        const res = await api.get("/api/ads/public");
-       const { data } = await axios.get<any>(`${API}/api/ads/${id}`);
-      setAd(data.ad);
+        const res = await api.get<AdDetailResponse>(`/api/ads/${id}`);
+        setAd(res.data.ad);
       } catch (err) {
         console.error(err);
+        setAd(null);
       } finally {
         setLoading(false);
       }
@@ -33,9 +42,15 @@ const AdDetail = () => {
       <p className="text-neutral-600 mt-2">{ad.description}</p>
 
       <div className="mt-6 space-y-2 text-sm">
-        <p><strong>Business:</strong> {ad.businessName}</p>
-        <p><strong>Phone:</strong> {ad.contactPhone}</p>
-        <p><strong>Email:</strong> {ad.contactEmail}</p>
+        <p>
+          <strong>Business:</strong> {ad.businessName}
+        </p>
+        <p>
+          <strong>Phone:</strong> {ad.contactPhone}
+        </p>
+        <p>
+          <strong>Email:</strong> {ad.contactEmail}
+        </p>
       </div>
     </div>
   );

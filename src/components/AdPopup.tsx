@@ -20,6 +20,10 @@ const getRandomPosition = (isMobile: boolean) => {
   return list[Math.floor(Math.random() * list.length)];
 };
 
+type PublicAdsResponse = {
+  ads: any[];
+};
+
 const AdPopup = () => {
   const [ads, setAds] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -32,8 +36,8 @@ const AdPopup = () => {
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await axios.get<any>(`${API}/api/ads/public`);
-        setAds(data.ads);
+        const res = await api.get<PublicAdsResponse>("/api/ads/public");
+        setAds(Array.isArray(res.data.ads) ? res.data.ads : []);
       } catch (err) {
         console.error("Failed to load ads", err);
       }

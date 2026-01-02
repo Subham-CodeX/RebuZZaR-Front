@@ -1,17 +1,26 @@
 import { useEffect, useState } from "react";
-import api from "../lib/api";
-import { withAuthHeaders } from "../lib/api";
+import api, { withAuthHeaders } from "../lib/api";
 import AdImagesSlider from "../components/AdImagesSlider";
+
+type PendingAdsResponse = {
+  ads: any[];
+};
 
 const AdminAdsPage = () => {
   const [ads, setAds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
   const token = localStorage.getItem("token") ?? undefined;
 
   const fetchPendingAds = async () => {
     try {
-      const res = await api.get("/api/admin/ads/pending", withAuthHeaders(token));
-      setAds(res.data.ads || []);
+      const res = await api.get<PendingAdsResponse>(
+        "/api/admin/ads/pending",
+        withAuthHeaders(token)
+      );
+
+      // ✅ logic unchanged, now type-safe
+      setAds(Array.isArray(res.data.ads) ? res.data.ads : []);
     } catch (err) {
       console.error("Fetch error:", err);
     } finally {
@@ -25,8 +34,13 @@ const AdminAdsPage = () => {
 
   const approveAd = async (id: string) => {
     if (!confirm("Approve this advertisement?")) return;
+
     try {
-      await api.post(`/api/admin/ads/approve/${id}`, {}, withAuthHeaders(token));
+      await api.post(
+        `/api/admin/ads/approve/${id}`,
+        {},
+        withAuthHeaders(token)
+      );
       alert("Advertisement Approved!");
       fetchPendingAds();
     } catch (err) {
@@ -37,8 +51,13 @@ const AdminAdsPage = () => {
 
   const rejectAd = async (id: string) => {
     if (!confirm("Reject this advertisement?")) return;
+
     try {
-      await api.post(`/api/admin/ads/reject/${id}`, { reason: "Not suitable" }, withAuthHeaders(token));
+      await api.post(
+        `/api/admin/ads/reject/${id}`,
+        { reason: "Not suitable" },
+        withAuthHeaders(token)
+      );
       alert("Advertisement Rejected!");
       fetchPendingAds();
     } catch (err) {
@@ -47,7 +66,9 @@ const AdminAdsPage = () => {
     }
   };
 
-  if (loading) return <div className="p-10">Loading pending advertisements…</div>;
+  if (loading) {
+    return <div className="p-10">Loading pending advertisements…</div>;
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-10">
@@ -75,7 +96,10 @@ const AdminAdsPage = () => {
               <div className="mt-3">
                 <strong>Payment Proof:</strong>
                 {ad.paymentProof ? (
-                  <img src={ad.paymentProof} className="mt-2 w-32 h-20 object-cover rounded" />
+                  <img
+                    src={ad.paymentProof}
+                    className="mt-2 w-32 h-20 object-cover rounded"
+                  />
                 ) : (
                   "No proof uploaded"
                 )}
