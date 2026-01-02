@@ -4,17 +4,22 @@ import AdCard from "../components/AdCard";
 
 const API = import.meta.env.VITE_BACKEND_URL;
 
+type PublicAdsResponse = {
+  ads: any[];
+};
+
 const PublicAds = () => {
   const [ads, setAds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchAds = async () => {
     try {
-      const res = await axios.get(`${API}/api/ads/public`);
-      setAds(res.data.ads);
-      setLoading(false);
+      const res = await axios.get<PublicAdsResponse>(`${API}/api/ads/public`);
+      setAds(Array.isArray(res.data.ads) ? res.data.ads : []);
     } catch (err) {
       console.error(err);
+      setAds([]);
+    } finally {
       setLoading(false);
     }
   };
@@ -38,15 +43,16 @@ const PublicAds = () => {
 
       {ads.length === 0 ? (
         <div className="text-center py-20 bg-neutral-100 rounded-lg">
-          <p className="text-xl text-neutral-600">No active advertisements at this moment.</p>
+          <p className="text-xl text-neutral-600">
+            No active advertisements at this moment.
+          </p>
         </div>
       ) : (
-       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {ads.map(ad => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {ads.map((ad) => (
             <AdCard key={ad._id} ad={ad} />
           ))}
-       </div>
-
+        </div>
       )}
     </div>
   );

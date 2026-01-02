@@ -32,8 +32,8 @@ const AdPopup = () => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await api.get("/api/ads/public");
-        setAds(res.data.ads || []);
+        const { data } = await axios.get<any>(`${API}/api/ads/public`);
+        setAds(data.ads);
       } catch (err) {
         console.error("Failed to load ads", err);
       }

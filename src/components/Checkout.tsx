@@ -131,7 +131,7 @@ const Checkout = () => {
                   item.productImage ||
                   'https://placehold.co/96x96/e2e8f0/64748b?text=Image'
                 }
-                alt={item.productTitle || 'Product'}
+                alt={item.title || 'Product'}
                 className="w-24 h-24 rounded-md object-cover"
                 onError={(e) =>
                   ((e.target as HTMLImageElement).src =

@@ -11,7 +11,7 @@ const Navbar = ({ setSearch, setMenu }: { setSearch: (value: string) => void; se
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setProfileMenuOpen] = useState(false);
 
-  const [activeCategory, setActiveCategory] = useState("All");
+  // const [activeCategory, setActiveCategory] = useState("All");
   const { user, logout } = useAuth();
   const { itemCount } = useCart();
 
@@ -19,7 +19,7 @@ const Navbar = ({ setSearch, setMenu }: { setSearch: (value: string) => void; se
 
   const handleCategoryClick = (category: string) => {
     const newCategory = category === "All" ? "" : category;
-    setActiveCategory(category);
+    // setActiveCategory(category);
     setMenu(newCategory);
     setMobileMenuOpen(false);
   };

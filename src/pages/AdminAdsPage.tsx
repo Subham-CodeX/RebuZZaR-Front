@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../lib/api";
 import { withAuthHeaders } from "../lib/api";
 import AdImagesSlider from "../components/AdImagesSlider";
@@ -6,7 +6,7 @@ import AdImagesSlider from "../components/AdImagesSlider";
 const AdminAdsPage = () => {
   const [ads, setAds] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token") ?? undefined;
 
   const fetchPendingAds = async () => {
     try {

@@ -12,8 +12,8 @@ const AdDetail = () => {
     (async () => {
       try {
         const res = await api.get("/api/ads/public");
-        const found = res.data.ads.find((a: any) => a._id === id);
-        setAd(found || null);
+       const { data } = await axios.get<any>(`${API}/api/ads/${id}`);
+      setAd(data.ad);
       } catch (err) {
         console.error(err);
       } finally {

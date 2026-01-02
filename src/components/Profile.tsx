@@ -14,7 +14,7 @@ const Profile = () => {
   const [userProducts, setUserProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const avatarInputRef = useRef<HTMLInputElement>(null);
+  // const avatarInputRef = useRef<HTMLInputElement>(null);
 
   // ========================
   // Product Images Slider
@@ -122,30 +122,30 @@ const Profile = () => {
   // ========================
   // Avatar Upload
   // ========================
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !token) return;
+  // const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file || !token) return;
 
-    const uploadToast = toast.loading('Uploading avatar...');
-    const formData = new FormData();
-    formData.append('avatar', file);
+  //   const uploadToast = toast.loading('Uploading avatar...');
+  //   const formData = new FormData();
+  //   formData.append('avatar', file);
 
-    try {
-      const response = await fetch(`${apiUrl}/api/profile/avatar`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
+  //   try {
+  //     const response = await fetch(`${apiUrl}/api/profile/avatar`, {
+  //       method: 'POST',
+  //       headers: { Authorization: `Bearer ${token}` },
+  //       body: formData,
+  //     });
 
-      const updatedUserData = await response.json();
-      if (!response.ok) throw new Error(updatedUserData.message || 'Failed to upload avatar.');
+  //     const updatedUserData = await response.json();
+  //     if (!response.ok) throw new Error(updatedUserData.message || 'Failed to upload avatar.');
 
-      updateUser(updatedUserData);
-      toast.success('Avatar updated successfully!', { id: uploadToast });
-    } catch (err: any) {
-      toast.error(`Error: ${err.message}`, { id: uploadToast });
-    }
-  };
+  //     updateUser(updatedUserData);
+  //     toast.success('Avatar updated successfully!', { id: uploadToast });
+  //   } catch (err: any) {
+  //     toast.error(`Error: ${err.message}`, { id: uploadToast });
+  //   }
+  // };
 
   if (!user) {
     return (

@@ -1,5 +1,5 @@
 export const debug = (msg: string, data?: any) => {
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.DEV) {
     console.log(msg, data);
   }
 };

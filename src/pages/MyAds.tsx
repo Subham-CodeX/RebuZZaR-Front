@@ -1,7 +1,11 @@
 // src/pages/MyAds.tsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../lib/api";
 import AdCard from "../components/AdCard";
+
+type MyAdsResponse = {
+  ads?: any[];
+};
 
 const MyAds = () => {
   const [ads, setAds] = useState<any[]>([]);
@@ -10,17 +14,17 @@ const MyAds = () => {
   useEffect(() => {
     (async () => {
       try {
-       const token =
-          localStorage.getItem("authToken") ||
-          localStorage.getItem("token") ||
+        const token =
+          localStorage.getItem("authToken") ??
+          localStorage.getItem("token") ??
           localStorage.getItem("accessToken");
 
-        const res = await api.get("/api/ads/my", {
-          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        const res = await api.get<MyAdsResponse>("/api/ads/my", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
 
-        // 🔥 Correct way to set ads
-        setAds(res.data?.ads || []);
+        // 🔥 Same logic, now type-safe
+        setAds(Array.isArray(res.data.ads) ? res.data.ads : []);
       } catch (err) {
         console.error("fetch my ads err", err);
         setAds([]);

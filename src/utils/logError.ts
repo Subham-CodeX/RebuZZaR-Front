@@ -1,5 +1,5 @@
 export function logError(context: string, error: unknown) {
-  if (process.env.NODE_ENV === "development") {
+  if (import.meta.env.DEV) {
     // 👨‍💻 In development: show full error for debugging
     console.error(`❌ ${context}:`, error);
   } else {

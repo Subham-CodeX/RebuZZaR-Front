@@ -1,7 +1,11 @@
 // src/pages/AdsList.tsx
-import React, { useEffect, useState } from "react";
-import api, { withAuthHeaders } from "../lib/api";
+import { useEffect, useState } from "react";
+import api from "../lib/api";
 import AdCard from "../components/AdCard";
+
+type AdsResponse = {
+  ads?: any[];
+};
 
 const AdsList = () => {
   const [ads, setAds] = useState<any[]>([]);
@@ -10,7 +14,8 @@ const AdsList = () => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await api.get("/api/ads/public");
+        const res = await api.get<AdsResponse>("/api/ads/public");
+
         setAds(Array.isArray(res.data.ads) ? res.data.ads : []);
       } catch (err) {
         console.error("Failed to fetch ads", err);
@@ -33,7 +38,7 @@ const AdsList = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {ads.map(ad => (
+          {ads.map((ad) => (
             <AdCard key={ad._id} ad={ad} />
           ))}
         </div>

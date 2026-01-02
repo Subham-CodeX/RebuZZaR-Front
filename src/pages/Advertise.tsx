@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -83,9 +83,9 @@ const Advertise = () => {
     }
 
     const token =
-      localStorage.getItem("token") ||
-      localStorage.getItem("authToken") ||
-      user?.token;
+    localStorage.getItem("token") ??
+    localStorage.getItem("authToken");
+
 
     if (!token) return alert("Not logged in.");
 
@@ -132,6 +132,10 @@ const Advertise = () => {
           <input className="border px-3 py-2 rounded" placeholder="Phone *" value={contactPhone} onChange={e => setContactPhone(e.target.value)} />
           <input className="border px-3 py-2 rounded" placeholder="Email *" value={contactEmail} onChange={e => setContactEmail(e.target.value)} />
         </div>
+
+        {/* Hidden but used — keeps backend logic intact */}
+        <input type="hidden" value={paymentUPI} onChange={e => setPaymentUPI(e.target.value)} />
+        <input type="hidden" value={amountPaid} onChange={e => setAmountPaid(e.target.value)} />
 
         <select
           className="border px-3 py-2 rounded w-full"

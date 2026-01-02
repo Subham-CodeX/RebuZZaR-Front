@@ -9,5 +9,5 @@ export interface Product {
   description: string;
   sellerId: string;
   postDate: string;
-  // isBooked?: boolean;
+  isBooked?: boolean;
 }

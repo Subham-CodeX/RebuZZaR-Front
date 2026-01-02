@@ -1,10 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 
 const GoogleAuthSuccess = () => {
   const navigate = useNavigate();
-  const { setToken } = useAuth(); // OR login()
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -20,7 +18,7 @@ const GoogleAuthSuccess = () => {
 
     // ✅ reload app so AuthContext fetches user
     window.location.href = "/";
-  }, []);
+  }, [navigate]);
 
   return <p className="text-center mt-10">Logging you in…</p>;
 };
