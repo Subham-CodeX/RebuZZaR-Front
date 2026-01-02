@@ -1,4 +1,4 @@
-const ADMIN_WHATSAPP = "91----------";
+const ADMIN_WHATSAPP = "916295308500";
 
 const message = encodeURIComponent(
   "Hi RebuZZar Team 👋\nI need help."
