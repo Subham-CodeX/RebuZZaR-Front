@@ -42,6 +42,7 @@ import AdDetail from "./pages/AdDetail";
 // Admin
 import AdminRoute from "./components/AdminRoute";
 import AdminPendingProducts from "./components/AdminPendingProducts";
+import AdminBroadcast from "./pages/admin/AdminBroadcast";
 
 // Auth
 import GoogleAuthSuccess from "./pages/GoogleAuthSuccess";
@@ -76,11 +77,7 @@ const App: React.FC = () => {
 
   // ⭐ SHOW WELCOME ONLY ON SIGNUP SESSION
   useEffect(() => {
-    if (
-      user &&
-      justSignedUp &&
-      user.hasSeenWelcome === false
-    ) {
+    if (user && justSignedUp && user.hasSeenWelcome === false) {
       setShowWelcome(true);
     }
   }, [user, justSignedUp]);
@@ -119,6 +116,7 @@ const App: React.FC = () => {
         <WhatsAppFloat />
 
         <Routes>
+          {/* PUBLIC */}
           <Route path="/" element={<Main search={search} menu={menu} />} />
           <Route path="/sell" element={<Sell />} />
           <Route path="/profile" element={<Profile />} />
@@ -133,23 +131,36 @@ const App: React.FC = () => {
 
           <Route path="/google-auth-success" element={<GoogleAuthSuccess />} />
 
+          {/* LEGAL */}
           <Route path="/legal/terms-and-conditions" element={<TermsAndConditions />} />
           <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/legal/return-refund-policy" element={<ReturnRefundPolicy />} />
           <Route path="/legal/faq" element={<FAQ />} />
 
+          {/* ADS */}
           <Route path="/ads/my" element={<MyAds />} />
           <Route path="/ads" element={<PublicAds />} />
           <Route path="/advertisements" element={<AdsList />} />
           <Route path="/advertise" element={<Advertise />} />
           <Route path="/ads/:id" element={<AdDetail />} />
 
+          {/* ADMIN */}
           <Route path="/admin/ads" element={<AdminAdsPage />} />
+
           <Route
             path="/admin/products"
             element={
               <AdminRoute>
                 <AdminPendingProducts />
+              </AdminRoute>
+            }
+          />
+
+          <Route
+            path="/admin/broadcast"
+            element={
+              <AdminRoute>
+                <AdminBroadcast />
               </AdminRoute>
             }
           />
