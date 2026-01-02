@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const RAW = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+const RAW = import.meta.env.VITE_BACKEND_URL || "https://rebuzzar-backends.onrender.com";
 
 // Remove extra trailing slashes
 const API_BASE = RAW.replace(/\/+$/, "");
