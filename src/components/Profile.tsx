@@ -150,13 +150,7 @@ const Profile = () => {
         >
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-6">
-              {/* ✅ Avatar upload handled internally */}
-              <Avatar
-                userId={user._id}
-                src={user.avatar}
-                clickable
-              />
-
+              <Avatar userId={user._id} src={user.avatar} clickable />
               <div>
                 <h1 className="text-3xl font-extrabold text-neutral-800">
                   {user.name}
@@ -180,6 +174,38 @@ const Profile = () => {
               </button>
             </div>
           </div>
+        </motion.div>
+
+        {/* ========================
+           Student Information
+        ======================== */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="backdrop-blur-xl bg-white/80 border border-neutral-200 rounded-3xl shadow p-8"
+        >
+          <h2 className="text-2xl font-bold text-neutral-800 mb-6 border-b border-neutral-200 pb-3">
+            Student Information 🎓
+          </h2>
+
+          <dl className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-10 gap-y-6">
+            {[
+              { label: 'Department', value: user.department },
+              { label: 'Program Type', value: user.programType },
+              { label: 'Year', value: user.year },
+              { label: 'Student Code', value: user.studentCode },
+            ]
+              .filter((info) => info.value)
+              .map((info) => (
+                <div key={info.label}>
+                  <dt className="text-sm text-neutral-500">{info.label}</dt>
+                  <dd className="font-semibold text-neutral-800">
+                    {info.value}
+                  </dd>
+                </div>
+              ))}
+          </dl>
         </motion.div>
 
         {/* Listings */}
