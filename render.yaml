@@ -1,8 +1,8 @@
 services:
   - type: web
-    name: rebuzzar-frontend
+    name: RebuZZar-Frontend
     env: static
-    buildCommand: npm run build
+    buildCommand: npm install && npm run build
     staticPublishPath: dist
     routes:
       - type: rewrite
