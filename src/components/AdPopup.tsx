@@ -82,14 +82,30 @@ const AdPopup = () => {
       `}
     >
       {/* Close button (desktop only visible) */}
-      {!isMobile && (
+      {/* {!isMobile && (
         <button
           className="absolute top-2 right-2 text-gray-500 hover:text-black"
           onClick={() => setVisible(false)}
         >
           ✕
         </button>
-      )}
+      )} */}
+
+      <button
+      onClick={() => setVisible(false)}
+      className={`
+        absolute z-10
+        flex items-center justify-center
+        rounded-full
+        transition
+        ${isMobile
+          ? "top-1 right-1 w-6 h-6 text-xs bg-black/60 text-white"
+          : "top-2 right-2 text-gray-500 hover:text-black"}
+      `}
+    >
+      ✕
+    </button>
+
 
       {/* Image */}
       {isMobile ? (
