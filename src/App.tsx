@@ -30,6 +30,7 @@ import TermsAndConditions from "./components/TermsAndConditions";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import ReturnRefundPolicy from "./components/ReturnRefundPolicy";
 import FAQ from "./components/FAQ";
+import AdvertisePolicy from "./components/AdvertisePolicy";
 
 // Ads
 import MyAds from "./pages/MyAds";
@@ -136,6 +137,7 @@ const App: React.FC = () => {
           <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/legal/return-refund-policy" element={<ReturnRefundPolicy />} />
           <Route path="/legal/faq" element={<FAQ />} />
+          <Route path="/advertise-policy" element={<AdvertisePolicy />} />
 
           {/* ADS */}
           <Route path="/ads/my" element={<MyAds />} />

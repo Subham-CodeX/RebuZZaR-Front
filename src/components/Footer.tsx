@@ -48,6 +48,7 @@ const Footer = () => {
               <li><Link to="/legal/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
               <li><Link to="/legal/return-refund-policy" className="hover:text-white transition-colors">Return & Refund Policy</Link></li>
               <li><Link to="/legal/terms-and-conditions" className="hover:text-white transition-colors">Terms & Conditions</Link></li>
+              <li><Link to="/legal/advertise-policy" className="hover:text-white transition-colors">Advertise Policy</Link></li>
             </ul>
           </div>
 
