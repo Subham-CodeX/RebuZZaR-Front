@@ -21,7 +21,11 @@ const AdDetail = () => {
     (async () => {
       try {
         const res = await api.get<AdDetailResponse>(`/api/ads/${id}`);
-        setAd(res.data.ad);
+        if (res.data?.ad) {
+          setAd(res.data.ad);
+        } else {
+          setAd(null);
+        }
       } catch (err) {
         console.error(err);
         setAd(null);
