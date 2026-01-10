@@ -92,6 +92,19 @@ const AdPopup = () => {
       )}
 
       {/* Image */}
+      {isMobile ? (
+      <a href={`/ads/${ad._id}`}>
+        <img
+          src={ad.images?.[0]}
+          alt={ad.title}
+          className="
+            w-full h-28 object-cover rounded-md mb-2
+            mobile-ad-image
+            cursor-pointer
+          "
+        />
+      </a>
+    ) : (
       <img
         src={ad.images?.[0]}
         alt={ad.title}
@@ -100,6 +113,8 @@ const AdPopup = () => {
           mobile-ad-image
         "
       />
+    )}
+
 
       {/* Content (hidden on mobile) */}
       <div className="mobile-ad-content">
