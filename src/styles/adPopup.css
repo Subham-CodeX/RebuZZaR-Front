@@ -19,7 +19,7 @@
   }
 }
 
-/* Optional subtle exit animation (future use) */
+/* Optional subtle exit animation */
 @keyframes adPopupExit {
   from {
     transform: translate(-50%, 0) scale(1);
@@ -31,16 +31,36 @@
   }
 }
 
-/* Mobile-only animation */
+/* ================================
+   MOBILE ONLY (NO DESKTOP IMPACT)
+   ================================ */
 @media (max-width: 640px) {
   .ad-mobile-slide {
-    animation: adPopupEnter 0.45s
-      cubic-bezier(0.22, 1, 0.36, 1);
+    animation: adPopupEnter 0.45s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: transform, opacity;
+  }
+
+  /* 🔥 MOBILE MINI POPUP */
+  .mobile-ad-popup {
+    width: 130px !important;   /* VERY SMALL */
+    padding: 6px !important;
+    border-radius: 10px;
+  }
+
+  /* 🔥 FULL IMAGE, NO CROP */
+  .mobile-ad-image {
+    height: auto !important;
+    object-fit: contain !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* 🔥 HIDE TEXT + CTA ON MOBILE */
+  .mobile-ad-content {
+    display: none;
   }
 }
 
-/* Accessibility: Respect reduced motion */
+/* Accessibility */
 @media (prefers-reduced-motion: reduce) {
   .ad-mobile-slide {
     animation: none;

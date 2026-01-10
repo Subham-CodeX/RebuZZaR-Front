@@ -61,7 +61,6 @@ const AdPopup = () => {
 
   const ad = ads[currentIndex];
 
-  // Position classes
   const positionClass = {
     "top-left": "top-4 left-4",
     "top-right": "top-4 right-4",
@@ -79,49 +78,55 @@ const AdPopup = () => {
         p-3 w-[280px]
         transition-all duration-300
         ${positionClass}
-        ${isMobile ? "ad-mobile-slide" : ""}
+        ${isMobile ? "ad-mobile-slide mobile-ad-popup" : ""}
       `}
     >
-      {/* Close */}
-      <button
-        className="absolute top-2 right-2 text-gray-500 hover:text-black"
-        onClick={() => setVisible(false)}
-      >
-        ✕
-      </button>
+      {/* Close button (desktop only visible) */}
+      {!isMobile && (
+        <button
+          className="absolute top-2 right-2 text-gray-500 hover:text-black"
+          onClick={() => setVisible(false)}
+        >
+          ✕
+        </button>
+      )}
 
       {/* Image */}
       <img
         src={ad.images?.[0]}
         alt={ad.title}
-        className="w-full h-28 object-cover rounded-md mb-2"
+        className="
+          w-full h-28 object-cover rounded-md mb-2
+          mobile-ad-image
+        "
       />
 
-      {/* Content */}
-      <h3 className="font-semibold text-sm leading-tight">
-        {ad.title}
-      </h3>
+      {/* Content (hidden on mobile) */}
+      <div className="mobile-ad-content">
+        <h3 className="font-semibold text-sm leading-tight">
+          {ad.title}
+        </h3>
 
-      <p className="font-medium text-sm text-gray-800">
-        {ad.businessName}
-      </p>
+        <p className="font-medium text-sm text-gray-800">
+          {ad.businessName}
+        </p>
 
-      <p className="text-xs text-gray-600 line-clamp-2 mt-1">
-        {ad.description}
-      </p>
+        <p className="text-xs text-gray-600 line-clamp-2 mt-1">
+          {ad.description}
+        </p>
 
-      {/* CTA */}
-      <a
-        href={`/ads/${ad._id}`}
-        className="
-          mt-2 block w-full text-center
-          px-3 py-1.5
-          bg-secondary text-white rounded-lg
-          text-xs font-semibold
-        "
-      >
-        View More
-      </a>
+        <a
+          href={`/ads/${ad._id}`}
+          className="
+            mt-2 block w-full text-center
+            px-3 py-1.5
+            bg-secondary text-white rounded-lg
+            text-xs font-semibold
+          "
+        >
+          View More
+        </a>
+      </div>
     </div>
   );
 };
