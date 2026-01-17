@@ -25,6 +25,9 @@ const Navbar = ({
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const profileButtonRef = useRef<HTMLButtonElement>(null);
 
+  // ✅ Animation state (so we can play close animation before removing)
+  const [shouldRenderProfileMenu, setShouldRenderProfileMenu] = useState(false);
+
   const categories = [
     "All",
     "Books",
@@ -43,20 +46,20 @@ const Navbar = ({
     setMobileMenuOpen(false);
   };
 
-  // ✅ Close profile dropdown when user clicks/taps outside (MOBILE ONLY)
+  // ✅ Outside click close (mobile only)
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent | TouchEvent) => {
       if (!isProfileMenuOpen) return;
 
       const target = event.target as Node;
 
-      // If click inside dropdown => do nothing
+      // click inside dropdown => do nothing
       if (profileMenuRef.current && profileMenuRef.current.contains(target)) return;
 
-      // If click on avatar button => do nothing (toggle handles it)
+      // click on avatar button => do nothing
       if (profileButtonRef.current && profileButtonRef.current.contains(target)) return;
 
-      // Otherwise close dropdown
+      // close dropdown
       setProfileMenuOpen(false);
     };
 
@@ -67,6 +70,20 @@ const Navbar = ({
       document.removeEventListener("mousedown", handleOutsideClick);
       document.removeEventListener("touchstart", handleOutsideClick);
     };
+  }, [isProfileMenuOpen]);
+
+  // ✅ Handle smooth open/close rendering for mobile dropdown
+  useEffect(() => {
+    if (isProfileMenuOpen) {
+      setShouldRenderProfileMenu(true);
+    } else {
+      // Wait for close animation then remove from DOM
+      const timer = setTimeout(() => {
+        setShouldRenderProfileMenu(false);
+      }, 180); // must match duration-200 (little less is okay)
+
+      return () => clearTimeout(timer);
+    }
   }, [isProfileMenuOpen]);
 
   return (
@@ -202,10 +219,17 @@ const Navbar = ({
                     <Avatar userId={user._id} src={user.avatar} size={36} />
                   </button>
 
-                  {isProfileMenuOpen && (
+                  {/* ✅ Mobile Profile Dropdown with Smooth Animation */}
+                  {shouldRenderProfileMenu && (
                     <div
                       ref={profileMenuRef}
-                      className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50"
+                      className={`absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50
+                      transition-all duration-200 ease-out origin-top-right
+                      ${
+                        isProfileMenuOpen
+                          ? "opacity-100 scale-100 translate-y-0"
+                          : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+                      }`}
                     >
                       <Link
                         to="/profile"
