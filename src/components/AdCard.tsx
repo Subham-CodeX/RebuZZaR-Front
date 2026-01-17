@@ -20,8 +20,9 @@ const AdCard = ({ ad, showContact = false }: any) => {
       <img
         src={image}
         alt={ad.title}
-        className="h-44 w-full object-contain bg-neutral-100 rounded-t-lg"
+        className="h-44 w-full object-cover rounded-t-lg"
       />
+
 
 
       <div className="p-4 text-left space-y-2">
