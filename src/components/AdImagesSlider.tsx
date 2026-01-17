@@ -13,15 +13,16 @@ const AdImagesSlider = ({ images, title }: { images: string[]; title: string }) 
   }, [images]);
 
   return (
-    <div className="relative w-full h-48 overflow-hidden bg-neutral-200">
+    <div className="relative w-full h-72 overflow-hidden bg-neutral-200">
       {images.map((img, i) => (
         <img
           key={i}
           src={img}
           alt={`${title} ${i}`}
-          className={`absolute w-full h-full object-cover transition-opacity duration-700 ${
+          className={`absolute w-full h-full object-contain bg-neutral-200 transition-opacity duration-700 ${
             i === index ? "opacity-100" : "opacity-0"
           }`}
+
         />
       ))}
 
