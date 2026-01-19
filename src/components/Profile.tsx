@@ -1,13 +1,13 @@
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
-import { useState, useEffect } from 'react';
-import toast from 'react-hot-toast';
-import { useAuth } from '../context/AuthContext';
-import { Product } from '../types';
-import { Link } from 'react-router-dom';
-import EmptyStateIcon from './EmptyStateIcon';
-import { motion } from 'framer-motion';
-import Avatar from '../components/Avatar';
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
+import { Product } from "../types";
+import { Link } from "react-router-dom";
+import EmptyStateIcon from "./EmptyStateIcon";
+import { motion } from "framer-motion";
+import Avatar from "../components/Avatar";
 
 const Profile = () => {
   const { user, token, logout } = useAuth();
@@ -55,7 +55,7 @@ const Profile = () => {
             src={url}
             alt={`${title} ${idx + 1}`}
             className={`absolute w-full h-full object-cover transition-opacity duration-1000 ${
-              idx === currentIndex ? 'opacity-100' : 'opacity-0'
+              idx === currentIndex ? "opacity-100" : "opacity-0"
             }`}
           />
         ))}
@@ -64,7 +64,7 @@ const Profile = () => {
             <span
               key={idx}
               className={`h-2 w-2 rounded-full ${
-                idx === currentIndex ? 'bg-white' : 'bg-gray-400'
+                idx === currentIndex ? "bg-white" : "bg-gray-400"
               }`}
             />
           ))}
@@ -86,7 +86,7 @@ const Profile = () => {
         const response = await fetch(`${apiUrl}/api/profile/products`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (!response.ok) throw new Error('Failed to fetch your products');
+        if (!response.ok) throw new Error("Failed to fetch your products");
         const data: Product[] = await response.json();
         setUserProducts(data);
       } catch (err: any) {
@@ -103,19 +103,19 @@ const Profile = () => {
   // Delete Product
   // ========================
   const handleDelete = async (productId: string) => {
-    if (!window.confirm('Delete this item? This cannot be undone.')) return;
+    if (!window.confirm("Delete this item? This cannot be undone.")) return;
 
     try {
       const response = await fetch(`${apiUrl}/api/products/${productId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to delete product.');
+        throw new Error(data.message || "Failed to delete product.");
       }
       setUserProducts((prev) => prev.filter((p) => p._id !== productId));
-      toast.success('Item deleted successfully!');
+      toast.success("Item deleted successfully!");
     } catch (err: any) {
       toast.error(`Error: ${err.message}`);
     }
@@ -123,7 +123,7 @@ const Profile = () => {
 
   if (!user) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-100 text-center">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-100 text-center px-4">
         <p className="text-neutral-600 mb-6">
           Please log in to view your profile.
         </p>
@@ -139,36 +139,44 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <div className="max-w-7xl mx-auto py-12 px-4 space-y-10">
-
+      {/* ✅ Added pb-24 so WhatsApp float never overlaps bottom content */}
+      <div className="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-10 pb-24">
         {/* Profile Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="backdrop-blur-xl bg-white/80 border border-neutral-200 rounded-3xl p-8 shadow"
+          className="backdrop-blur-xl bg-white/80 border border-neutral-200 rounded-3xl p-6 sm:p-8 shadow overflow-hidden"
         >
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            <div className="flex items-center gap-4 sm:gap-6 w-full min-w-0">
               <Avatar userId={user._id} src={user.avatar} clickable />
-              <div>
-                <h1 className="text-3xl font-extrabold text-neutral-800">
+
+              {/* ✅ min-w-0 + break-words fixes email overflow */}
+              <div className="min-w-0 flex-1">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-neutral-800 leading-tight">
                   {user.name}
                 </h1>
-                <p className="text-neutral-600">{user.email}</p>
+
+                {/* ✅ break-all keeps long email inside the card in mobile */}
+                <p className="text-neutral-600 text-sm sm:text-base break-all">
+                  {user.email}
+                </p>
               </div>
             </div>
 
-            <div className="flex gap-3">
+            {/* Buttons */}
+            <div className="flex gap-3 w-full sm:w-auto">
               <Link
                 to="/edit-profile"
-                className="bg-neutral-700 text-white px-5 py-2.5 rounded-lg font-semibold hover:opacity-90"
+                className="flex-1 sm:flex-none text-center bg-neutral-700 text-white px-5 py-2.5 rounded-lg font-semibold hover:opacity-90"
               >
                 Edit Profile
               </Link>
+
               <button
                 onClick={logout}
-                className="bg-red-500 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-red-600 md:hidden"
+                className="flex-1 sm:flex-none bg-red-500 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-red-600 md:hidden"
               >
                 Logout
               </button>
@@ -183,24 +191,24 @@ const Profile = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="backdrop-blur-xl bg-white/80 border border-neutral-200 rounded-3xl shadow p-8"
+          className="backdrop-blur-xl bg-white/80 border border-neutral-200 rounded-3xl shadow p-6 sm:p-8 overflow-hidden"
         >
-          <h2 className="text-2xl font-bold text-neutral-800 mb-6 border-b border-neutral-200 pb-3">
+          <h2 className="text-xl sm:text-2xl font-bold text-neutral-800 mb-6 border-b border-neutral-200 pb-3">
             Student Information 🎓
           </h2>
 
           <dl className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-10 gap-y-6">
             {[
-              { label: 'Department', value: user.department },
-              { label: 'Program Type', value: user.programType },
-              { label: 'Year', value: user.year },
-              { label: 'Student Code', value: user.studentCode },
+              { label: "Department", value: user.department },
+              { label: "Program Type", value: user.programType },
+              { label: "Year", value: user.year },
+              { label: "Student Code", value: user.studentCode },
             ]
               .filter((info) => info.value)
               .map((info) => (
-                <div key={info.label}>
+                <div key={info.label} className="min-w-0">
                   <dt className="text-sm text-neutral-500">{info.label}</dt>
-                  <dd className="font-semibold text-neutral-800">
+                  <dd className="font-semibold text-neutral-800 break-words">
                     {info.value}
                   </dd>
                 </div>
@@ -210,7 +218,7 @@ const Profile = () => {
 
         {/* Listings */}
         <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          <h2 className="text-2xl font-bold text-neutral-800 mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-neutral-800 mb-8">
             Your Active Listings 🛒
           </h2>
 
@@ -228,13 +236,10 @@ const Profile = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-white/80 border rounded-3xl shadow hover:shadow-lg transition"
+                  className="bg-white/80 border rounded-3xl shadow hover:shadow-lg transition overflow-hidden"
                 >
                   <Link to={`/product/${item._id}`}>
-                    <ProductImagesSlider
-                      images={item.imageUrl}
-                      title={item.title}
-                    />
+                    <ProductImagesSlider images={item.imageUrl} title={item.title} />
                   </Link>
 
                   <div className="p-5 space-y-3">
@@ -262,7 +267,7 @@ const Profile = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-16 bg-white/80 border rounded-3xl">
+            <div className="text-center py-16 bg-white/80 border rounded-3xl overflow-hidden">
               <EmptyStateIcon />
               <h3 className="text-2xl font-semibold mt-4">
                 You have no active listings

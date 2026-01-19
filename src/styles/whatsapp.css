@@ -1,5 +1,7 @@
 .whatsapp-float {
   position: fixed;
+
+  /* ✅ Desktop default */
   bottom: 24px;
   right: 24px;
 
@@ -13,7 +15,7 @@
   align-items: center;
   justify-content: center;
 
-  z-index: 2147483647; /* 🔥 maximum safe z-index */
+  z-index: 2147483647;
   cursor: pointer;
 
   box-shadow: 0 8px 20px rgba(37, 211, 102, 0.45);
@@ -29,5 +31,22 @@
   width: 28px;
   height: 28px;
   object-fit: contain;
-  pointer-events: none; /* click goes to parent */
+  pointer-events: none;
+}
+
+/* ✅ MOBILE FIX */
+@media (max-width: 640px) {
+  .whatsapp-float {
+    /* Keep it higher on mobile so it never overlaps page content */
+    bottom: 90px;
+    right: 16px;
+
+    width: 52px;
+    height: 52px;
+  }
+
+  .whatsapp-icon {
+    width: 26px;
+    height: 26px;
+  }
 }

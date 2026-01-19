@@ -1,8 +1,6 @@
 const ADMIN_WHATSAPP = "916295308500";
 
-const message = encodeURIComponent(
-  "Hi RebuZZar Team 👋\nI need help."
-);
+const message = encodeURIComponent("Hi RebuZZar Team 👋\nI need help.");
 
 const WhatsAppFloat: React.FC = () => {
   return (
@@ -14,8 +12,8 @@ const WhatsAppFloat: React.FC = () => {
       aria-label="Chat with RebuZZar on WhatsApp"
     >
       <img
-        src="/WhatsApp.png"   // ✅ EXACT public file name
-        alt=""                // ✅ prevent text showing if image fails
+        src="/WhatsApp.png"
+        alt=""
         className="whatsapp-icon"
         draggable={false}
       />
