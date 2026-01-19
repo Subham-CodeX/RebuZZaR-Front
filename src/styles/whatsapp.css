@@ -37,8 +37,7 @@
 /* ✅ MOBILE FIX */
 @media (max-width: 640px) {
   .whatsapp-float {
-    /* Keep it higher on mobile so it never overlaps page content */
-    bottom: 90px;
+    bottom: 24px;  /* ✅ stays down like your home page */
     right: 16px;
 
     width: 52px;
