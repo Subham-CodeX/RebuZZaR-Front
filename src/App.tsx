@@ -67,6 +67,14 @@ const App: React.FC = () => {
 
   const { user, justSignedUp, setJustSignedUp } = useAuth();
 
+  // ✅ IMPORTANT FIX:
+  // Disable browser scroll restoration so it will NOT jump to footer on Back (mobile issue)
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+  }, []);
+
   // Debug
   useEffect(() => {
     debug("User state:", {
@@ -100,10 +108,7 @@ const App: React.FC = () => {
         <Toaster position="top-center" />
 
         {showWelcome && (
-          <WelcomePopup
-            onClose={closeWelcomePopup}
-            userName={user?.name}
-          />
+          <WelcomePopup onClose={closeWelcomePopup} userName={user?.name} />
         )}
 
         <Navbar setSearch={setSearch} setMenu={setMenu} />
@@ -133,12 +138,20 @@ const App: React.FC = () => {
           <Route path="/google-auth-success" element={<GoogleAuthSuccess />} />
 
           {/* LEGAL */}
-          <Route path="/legal/terms-and-conditions" element={<TermsAndConditions />} />
+          <Route
+            path="/legal/terms-and-conditions"
+            element={<TermsAndConditions />}
+          />
           <Route path="/legal/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/legal/return-refund-policy" element={<ReturnRefundPolicy />} />
+          <Route
+            path="/legal/return-refund-policy"
+            element={<ReturnRefundPolicy />}
+          />
           <Route path="/legal/faq" element={<FAQ />} />
-          <Route path="/legal/advertise-policy" element={<AdvertisePolicy />} />
-
+          <Route
+            path="/legal/advertise-policy"
+            element={<AdvertisePolicy />}
+          />
 
           {/* ADS */}
           <Route path="/ads/my" element={<MyAds />} />
