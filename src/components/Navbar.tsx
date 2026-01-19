@@ -185,20 +185,26 @@ const Navbar = ({
           </div>
 
           {/* ============================
-            MOBILE NAVBAR
+            MOBILE NAVBAR  ✅ FIXED CENTER LOGO
         ============================ */}
-          <div className="md:hidden flex items-center justify-between h-16">
-            {/* Mobile menu button */}
-            <button onClick={() => setMobileMenuOpen(!isMobileMenuOpen)} className="p-2 text-neutral-700">
-              {isMobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
-            </button>
+          <div className="md:hidden relative flex items-center h-16">
+            {/* Left: Mobile menu button */}
+            <div className="flex items-center">
+              <button onClick={() => setMobileMenuOpen(!isMobileMenuOpen)} className="p-2 text-neutral-700">
+                {isMobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
+              </button>
+            </div>
 
-            {/* Logo */}
-            <Link to="/">
+            {/* ✅ Center Logo (ABSOLUTE CENTER) */}
+            <Link
+              to="/"
+              className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center"
+            >
               <img src={RebuZZar} alt="RebuZZar Logo" className="h-14 w-auto" />
             </Link>
 
-            <div className="flex items-center space-x-3">
+            {/* Right: Cart + Avatar */}
+            <div className="ml-auto flex items-center space-x-3">
               {/* Cart */}
               <Link to="/checkout" className="relative p-2 text-neutral-700">
                 <CartIcon />
@@ -253,12 +259,6 @@ const Navbar = ({
                         My Ads
                       </Link>
 
-                      {/* ⭐ Mobile Admin Panel
-                    {user?.role === "admin" && (
-                      <Link to="/admin/ads" >
-                      </Link>
-                    )} */}
-
                       <button
                         onClick={() => {
                           setProfileMenuOpen(false);
@@ -306,12 +306,6 @@ const Navbar = ({
             <Link to="/advertise" className="block px-4 py-3 font-medium bg-secondary text-white">
               Upload-Advertise
             </Link>
-
-            {/* ⭐ Admin Panel in Mobile List 
-          {user?.role === "admin" && (
-            <Link to="/admin/ads" className="block px-4 py-3 text-blue-600 font-semibold hover:bg-neutral-200">
-            </Link>
-          )} */}
 
             <div className="px-4 py-3 border-t border-neutral-300 font-semibold text-neutral-700">Categories</div>
 
