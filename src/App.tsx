@@ -8,6 +8,7 @@ import { debug } from "./utils/debug";
 import { useAuth } from "./context/AuthContext";
 import api from "./lib/api";
 
+
 // Layout
 import Navbar from "./components/Navbar";
 import Menubar from "./components/Menubar";
@@ -47,6 +48,7 @@ import AdminBroadcast from "./pages/admin/AdminBroadcast";
 
 // Auth
 import GoogleAuthSuccess from "./pages/GoogleAuthSuccess";
+import GoogleCompleteProfile from "./pages/GoogleCompleteProfile"; // ✅ NEW
 
 // Context
 import { CartProvider } from "./context/CartContext";
@@ -136,6 +138,11 @@ const App: React.FC = () => {
           <Route path="/booking-success" element={<BookingSuccess />} />
 
           <Route path="/google-auth-success" element={<GoogleAuthSuccess />} />
+
+          <Route
+            path="/google-complete-profile"
+            element={<GoogleCompleteProfile />}
+          />
 
           {/* LEGAL */}
           <Route
