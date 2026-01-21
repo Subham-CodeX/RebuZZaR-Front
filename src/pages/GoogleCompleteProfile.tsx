@@ -24,6 +24,11 @@ const GoogleCompleteProfile = () => {
   const [year, setYear] = useState("");
   const [studentCode, setStudentCode] = useState("");
 
+  // ✅ NEW: Password step for Google users (to enable Email login too)
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordSet, setPasswordSet] = useState(false);
+
   // Department options per program (same as Login.tsx)
   const departmentOptions: Record<string, string[]> = {
     Diploma: [
@@ -107,7 +112,7 @@ const GoogleCompleteProfile = () => {
     }
   }, [token, navigate]);
 
-  // ✅ Send OTP (auto) when page loads
+  // ✅ Send OTP automatically when page loads
   useEffect(() => {
     const sendOtp = async () => {
       if (!token) return;
@@ -225,12 +230,54 @@ const GoogleCompleteProfile = () => {
 
       toast.success("Profile completed successfully ✅");
 
-      // ✅ Save user in context
+      // ✅ Save user in context (but keep onboarding until password set)
       login(data.user, token!);
 
-      navigate("/");
+      // ✅ Show "Set Password" section next
+      toast.success("Now set password to enable Email Login ✅");
     } catch (err: any) {
       toast.error(err.message || "Profile completion failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ NEW: Set Password (Enable Email Login for Google users)
+  const handleSetPassword = async () => {
+    if (!password || password.length < 6) {
+      return toast.error("Password must be at least 6 characters");
+    }
+
+    if (password !== confirmPassword) {
+      return toast.error("Password and Confirm Password do not match");
+    }
+
+    if (!token) {
+      return toast.error("Unauthorized! Please login again.");
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await fetch(`${API}/api/auth/set-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to set password");
+
+      setPasswordSet(true);
+      toast.success("Password set successfully ✅ Email login enabled!");
+
+      // ✅ Now user is fully onboarded - go home
+      navigate("/");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to set password");
     } finally {
       setLoading(false);
     }
@@ -293,7 +340,7 @@ const GoogleCompleteProfile = () => {
 
           <input
             type="text"
-            placeholder="Full Name "
+            placeholder="Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className={inputStyle}
@@ -366,11 +413,46 @@ const GoogleCompleteProfile = () => {
 
           <button
             onClick={handleCompleteProfile}
-            disabled={loading}
+            disabled={loading || !otpVerified}
             className="w-full py-2 rounded-lg bg-neutral-800 text-white font-medium hover:bg-neutral-900 disabled:bg-neutral-400"
           >
             {loading ? "Submitting..." : "Complete Profile"}
           </button>
+        </div>
+
+        {/* ✅ NEW PASSWORD SECTION */}
+        <div className="mt-8 space-y-3 border-t pt-6">
+          <h3 className="text-base font-semibold text-neutral-700">
+            Step 3: Set Password (Enable Email Login)
+          </h3>
+
+          <input
+            type="password"
+            placeholder="Set Password (min 6 characters)"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className={inputStyle}
+          />
+
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className={inputStyle}
+          />
+
+          <button
+            onClick={handleSetPassword}
+            disabled={loading || passwordSet}
+            className="w-full py-2 rounded-lg bg-neutral-800 text-white font-medium hover:bg-neutral-900 disabled:bg-neutral-400"
+          >
+            {passwordSet ? "Password Set ✅" : loading ? "Saving..." : "Set Password"}
+          </button>
+
+          <p className="text-xs text-neutral-500 text-center">
+            After setting password, you can login using Email + Password too.
+          </p>
         </div>
 
         <button
