@@ -293,7 +293,7 @@ const GoogleCompleteProfile = () => {
 
           <input
             type="text"
-            placeholder="Full Name (optional)"
+            placeholder="Full Name "
             value={name}
             onChange={(e) => setName(e.target.value)}
             className={inputStyle}
