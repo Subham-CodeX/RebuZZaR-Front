@@ -107,7 +107,7 @@ const GoogleCompleteProfile = () => {
     }
   }, [token, navigate]);
 
-  // ✅ Auto-send OTP when page loads
+  // ✅ Send OTP (auto) when page loads
   useEffect(() => {
     const sendOtp = async () => {
       if (!token) return;
@@ -134,9 +134,33 @@ const GoogleCompleteProfile = () => {
       }
     };
 
-    // send OTP only once
     if (!otpSent) sendOtp();
   }, [token, otpSent]);
+
+  // ✅ Resend OTP (NO reload ✅)
+  const handleResendOtp = async () => {
+    if (!token) return;
+
+    try {
+      setLoading(true);
+
+      const res = await fetch(`${API}/api/auth/google/send-otp`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to resend OTP");
+
+      toast.success("OTP resent to your university email ✅");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to resend OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ✅ Verify OTP
   const handleVerifyOtp = async () => {
@@ -245,11 +269,15 @@ const GoogleCompleteProfile = () => {
             disabled={!otpSent || otpVerified || loading}
             className="w-full py-2 rounded-lg bg-neutral-800 text-white font-medium hover:bg-neutral-900 disabled:bg-neutral-400"
           >
-            {otpVerified ? "OTP Verified ✅" : loading ? "Verifying..." : "Verify OTP"}
+            {otpVerified
+              ? "OTP Verified ✅"
+              : loading
+              ? "Verifying..."
+              : "Verify OTP"}
           </button>
 
           <button
-            onClick={() => window.location.reload()}
+            onClick={handleResendOtp}
             disabled={loading}
             className="w-full py-2 rounded-lg bg-neutral-200 text-neutral-800 font-medium hover:bg-neutral-300 disabled:bg-neutral-100"
           >
@@ -279,7 +307,9 @@ const GoogleCompleteProfile = () => {
               { value: "PG", label: "Postgraduate (PG)" },
               { value: "PhD", label: "Doctorate (PhD)" },
             ]}
-            value={programType ? { value: programType, label: programType } : null}
+            value={
+              programType ? { value: programType, label: programType } : null
+            }
             onChange={(option) => {
               setProgramType(option?.value || "");
               setDepartment("");

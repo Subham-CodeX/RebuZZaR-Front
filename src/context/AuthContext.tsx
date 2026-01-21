@@ -57,7 +57,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [justSignedUp, setJustSignedUp] = useState(false);
 
   /* =======================
-     Fetch current user
+     Logout (your same logic ✅)
+  ======================= */
+  const logout = async () => {
+    const jwt = localStorage.getItem("authToken");
+
+    try {
+      if (jwt) {
+        await fetch(`${API}/api/auth/logout`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${jwt}`,
+          },
+        });
+      }
+    } catch (err) {
+      logError("Logout API failed", err);
+      // Do NOT block logout
+    }
+
+    // ✅ Clear frontend auth AFTER API call
+    setUser(null);
+    setToken(null);
+    setJustSignedUp(false);
+    localStorage.removeItem("authUser");
+    localStorage.removeItem("authToken");
+  };
+
+  /* =======================
+     Fetch current user (FIXED ✅)
   ======================= */
   const fetchUser = async (jwt: string) => {
     try {
@@ -67,6 +95,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         },
       });
 
+      /**
+       * ✅ FIX:
+       * If Google user is not verified/profile not complete,
+       * backend returns 403.
+       * We must NOT logout, because user needs token to finish onboarding.
+       */
+      if (res.status === 403) {
+        const data = await res.json().catch(() => null);
+        console.warn("Onboarding required:", data?.message);
+
+        // ✅ Keep token but keep user null
+        setUser(null);
+        localStorage.removeItem("authUser");
+        return;
+      }
+
+      // ✅ If token invalid/expired -> logout
+      if (res.status === 401) {
+        await logout();
+        return;
+      }
+
       if (!res.ok) throw new Error("Failed to fetch user");
 
       const data = await res.json();
@@ -74,7 +124,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("authUser", JSON.stringify(data.user));
     } catch (err) {
       logError("Auth fetchUser failed", err);
-      logout();
+      await logout();
     }
   };
 
@@ -93,14 +143,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const decoded = jwtDecode<{ exp: number }>(storedToken);
 
         if (decoded.exp * 1000 < Date.now()) {
-          logout();
+          await logout();
           return;
         }
 
         setToken(storedToken);
         await fetchUser(storedToken);
       } catch {
-        logout();
+        await logout();
       } finally {
         setIsLoading(false);
       }
@@ -126,38 +176,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // 🔴 IMPORTANT: login should NOT trigger welcome
     setJustSignedUp(false);
   };
-
-  /* =======================
-     Logout
-  ======================= */
-  /* =======================
-   Logout (FIXED)
-======================= */
-const logout = async () => {
-  const jwt = localStorage.getItem("authToken");
-
-  try {
-    if (jwt) {
-      await fetch(`${API}/api/auth/logout`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
-      });
-    }
-  } catch (err) {
-    logError("Logout API failed", err);
-    // Do NOT block logout
-  }
-
-  // ✅ Clear frontend auth AFTER API call
-  setUser(null);
-  setToken(null);
-  setJustSignedUp(false);
-  localStorage.removeItem("authUser");
-  localStorage.removeItem("authToken");
-};
-
 
   /* =======================
      Update User
