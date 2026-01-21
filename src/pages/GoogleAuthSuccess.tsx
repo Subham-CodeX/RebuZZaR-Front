@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
@@ -9,14 +9,22 @@ const GoogleAuthSuccess = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+  // ✅ Prevent double execution (React 18 StrictMode runs useEffect twice in dev)
+  const hasRun = useRef(false);
+
   useEffect(() => {
+    // ✅ block second run
+    if (hasRun.current) return;
+    hasRun.current = true;
+
     const run = async () => {
       const params = new URLSearchParams(window.location.search);
       const token = params.get("token");
 
+      // ✅ If no token, silently redirect home (NO wrong toast)
       if (!token) {
-        toast.error("Google login failed!");
-        return navigate("/");
+        navigate("/", { replace: true });
+        return;
       }
 
       // ✅ Store token
@@ -32,20 +40,25 @@ const GoogleAuthSuccess = () => {
 
         // ✅ If OTP not verified OR profile incomplete → go to complete profile page
         if (res.status === 403) {
-          return navigate("/google-complete-profile");
+          navigate("/google-complete-profile", { replace: true });
+          return;
         }
 
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Failed to fetch user");
 
-        // ✅ If ok, login user in context and go home
+        // ✅ login user in context and go home
         login(data.user, token);
+
         toast.success("Google login successful ✅");
-        navigate("/");
+        navigate("/", { replace: true });
       } catch (err: any) {
         console.error("GoogleAuthSuccess error:", err);
+
+        // ✅ Only show error if something REALLY failed
         toast.error(err.message || "Google login failed!");
-        navigate("/");
+
+        navigate("/", { replace: true });
       }
     };
 
