@@ -274,8 +274,9 @@ const GoogleCompleteProfile = () => {
       setPasswordSet(true);
       toast.success("Password set successfully ✅ Email login enabled!");
 
-      // ✅ Now user is fully onboarded - go home
-      navigate("/");
+      // ✅ NEW: Redirect to Phone OTP verification step
+      toast.success("Now verify your phone ✅");
+      navigate("/verify-phone", { replace: true });
     } catch (err: any) {
       toast.error(err.message || "Failed to set password");
     } finally {

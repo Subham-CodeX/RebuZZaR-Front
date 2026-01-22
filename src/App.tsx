@@ -49,6 +49,7 @@ import AdminBroadcast from "./pages/admin/AdminBroadcast";
 // Auth
 import GoogleAuthSuccess from "./pages/GoogleAuthSuccess";
 import GoogleCompleteProfile from "./pages/GoogleCompleteProfile"; // ✅ NEW
+import VerifyPhone from "./pages/VerifyPhone";
 
 // Context
 import { CartProvider } from "./context/CartContext";
@@ -138,6 +139,7 @@ const App: React.FC = () => {
           <Route path="/booking-success" element={<BookingSuccess />} />
 
           <Route path="/google-auth-success" element={<GoogleAuthSuccess />} />
+          <Route path="/verify-phone" element={<VerifyPhone />} />
 
           <Route
             path="/google-complete-profile"

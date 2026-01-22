@@ -38,9 +38,25 @@ const GoogleAuthSuccess = () => {
           },
         });
 
-        // ✅ If OTP not verified OR profile incomplete → go to complete profile page
+        // ✅ If onboarding required (google profile / phone otp)
         if (res.status === 403) {
-          navigate("/google-complete-profile", { replace: true });
+          const data = await res.json().catch(() => null);
+
+          // ✅ Google profile not complete → go to complete profile page
+          if (data?.message === "Google profile not complete") {
+            navigate("/google-complete-profile", { replace: true });
+            return;
+          }
+
+          // ✅ NEW: Phone OTP required → go to verify phone page
+          if (data?.step === "PHONE_OTP_REQUIRED") {
+            login(null, token); // ✅ keep token in context
+            navigate("/verify-phone", { replace: true });
+            return;
+          }
+
+          // ✅ fallback
+          navigate("/", { replace: true });
           return;
         }
 

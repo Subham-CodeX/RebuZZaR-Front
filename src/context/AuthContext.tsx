@@ -24,6 +24,11 @@ export interface User {
   department?: string;
   year?: "1st" | "2nd" | "3rd" | "4th" | "5th";
   hasSeenWelcome?: boolean;
+
+  // ✅ NEW (Phone Verification)
+  phoneNumber?: string;
+  isPhoneVerified?: boolean;
+  isFullyVerified?: boolean;
 }
 
 /* =======================
@@ -38,6 +43,9 @@ interface AuthContextType {
   login: (user: User | null, token: string) => void;
   logout: () => void;
   updateUser: (user: User) => void;
+
+  // ✅ NEW
+  refreshUser: () => Promise<void>;
 }
 
 /* =======================
@@ -57,7 +65,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [justSignedUp, setJustSignedUp] = useState(false);
 
   /* =======================
-     Logout (your same logic ✅)
+     Logout
   ======================= */
   const logout = async () => {
     const jwt = localStorage.getItem("authToken");
@@ -73,19 +81,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch (err) {
       logError("Logout API failed", err);
-      // Do NOT block logout
     }
 
     // ✅ Clear frontend auth AFTER API call
     setUser(null);
     setToken(null);
     setJustSignedUp(false);
+
     localStorage.removeItem("authUser");
     localStorage.removeItem("authToken");
+
+    // ✅ NEW: clear onboarding step too
+    localStorage.removeItem("onboardingStep");
   };
 
   /* =======================
-     Fetch current user (FIXED ✅)
+     Fetch current user
   ======================= */
   const fetchUser = async (jwt: string) => {
     try {
@@ -96,14 +107,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
 
       /**
-       * ✅ FIX:
-       * If Google user is not verified/profile not complete,
+       * ✅ If onboarding required (google/profile/phone),
        * backend returns 403.
        * We must NOT logout, because user needs token to finish onboarding.
        */
       if (res.status === 403) {
         const data = await res.json().catch(() => null);
         console.warn("Onboarding required:", data?.message);
+
+        // ✅ Store onboarding step if backend sends it
+        if (data?.step) {
+          localStorage.setItem("onboardingStep", data.step);
+        }
 
         // ✅ Keep token but keep user null
         setUser(null);
@@ -120,12 +135,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!res.ok) throw new Error("Failed to fetch user");
 
       const data = await res.json();
+
+      // ✅ User successfully loaded => onboarding done
+      localStorage.removeItem("onboardingStep");
+
       setUser(data.user);
       localStorage.setItem("authUser", JSON.stringify(data.user));
     } catch (err) {
       logError("Auth fetchUser failed", err);
       await logout();
     }
+  };
+
+  // ✅ NEW helper to refresh user after phone verification
+  const refreshUser = async () => {
+    const jwt = localStorage.getItem("authToken");
+    if (!jwt) return;
+    await fetchUser(jwt);
   };
 
   /* =======================
@@ -169,11 +195,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (userData) {
       setUser(userData);
       localStorage.setItem("authUser", JSON.stringify(userData));
+
+      // ✅ If user not fully verified, keep onboarding step
+      if (userData.isFullyVerified === false) {
+        localStorage.setItem("onboardingStep", "FULL_VERIFICATION_REQUIRED");
+      } else {
+        localStorage.removeItem("onboardingStep");
+      }
     } else {
       fetchUser(jwt);
     }
 
-    // 🔴 IMPORTANT: login should NOT trigger welcome
     setJustSignedUp(false);
   };
 
@@ -196,6 +228,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         login,
         logout,
         updateUser,
+        refreshUser,
       }}
     >
       {children}
